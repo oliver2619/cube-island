@@ -1,0 +1,8 @@
+<app-dialog title="Buddeln">
+    <div class="buttonGroup vertical">
+        <button routerLink="/newGame" title="Start a new game.">New game</button>
+        <button routerLink="/loadGame" title="Load and manage previously saved games.">Saved games</button>
+        <button routerLink="/settings" [queryParams]="{return: '/main'}" disabled="disabled" title="Manage sound and graphics settings.">Settings</button>
+        <button routerLink="/help" [queryParams]="{return: '/main'}" title="Show the list of shortcuts.">Shortcuts</button>
+    </div>
+</app-dialog>

@@ -1,0 +1,12 @@
+<app-dialog title="Saved games">
+    <p *ngIf="!hasSavedGames()">No saved games found.</p>
+    <ul class="selectable" *ngIf="hasSavedGames()" title="List of all saved games.">
+        <li *ngFor="let g of savedGames" [ngClass]="{selected: selected === g}" (click)="select(g)">{{g}}</li>
+    </ul>
+    <div class="buttonGroup">
+        <button (click)="onDelete()" [disabled]="!canDelete()" title="Delete the selected game.">Delete</button>
+        <button (click)="onLoad()" [disabled]="!canLoad()" title="Load and continue the selected game.">Load</button>
+        <button routerLink="{{mainMenuUrl}}" title="Cancel">Cancel</button>
+    </div>
+</app-dialog>
+<app-message-box></app-message-box>

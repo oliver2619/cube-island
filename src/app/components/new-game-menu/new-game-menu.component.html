@@ -1,0 +1,29 @@
+<app-dialog title="New game">
+    <form [formGroup]="formGroup">
+        <div class="inputGroup" title="The name will affect the way, a new world is created. (Not implemented, yet)">
+            <label for="name" accesskey="n"><em>N</em>ame</label>
+            <input #name id="name" type="text" formControlName="name" placeholder="Please enter a name" autocomplete="off">
+        </div>
+        <div class="inputGroup" title="The clima zone affects the vegetation and fauna and the cycle of day and night. (Not implemented, yet)">
+            <label for="climate" accesskey="c"><em>C</em>limate</label>
+            <select id="climate" formControlName="climate">
+                <option *ngFor="let l of climates" value="{{l.id}}" disabled="{{l.id !== 'temperate'}}">{{l.name}}</option>
+            </select>
+        </div>
+        <div class="inputGroup" title="Size of map">
+            <label for="size" accesskey="s"><em>S</em>ize of map</label>
+            <select id="size" formControlName="mapSize">
+                <option *ngFor="let s of mapSizes" value="{{s.size}}">{{s.name}}</option>
+            </select>
+        </div>
+        <div class="inputGroup" title="If enabled You will never die. Even monsters can't kill You.">
+            <label accesskey="i"><input type="checkbox" formControlName="infiniteLife"><em>I</em>nfinite life</label>
+        </div>
+        <div class="inputGroup" title="If enabled monsters like wolves and vampire bats will appear during night and hunt. (Not implemented, yet)">
+            <label accesskey="m"><input type="checkbox" formControlName="monsters"><em>M</em>onsters</label>
+        </div>
+        <div class="buttonGroup">
+            <button (click)="onStart()" [disabled]="!canStart()" title="Start the game.">Start</button><button routerLink="{{mainMenuUrl}}" title="Back to main menu.">Cancel</button>
+        </div>
+    </form>
+</app-dialog>

@@ -1,0 +1,11 @@
+<app-dialog title="Game">
+    <div class="buttonGroup vertical">
+        <button routerLink="/saveGame" title="Save the current game state.">Save</button>
+        <button routerLink="/settings" [queryParams]="{return: '/gameMenu'}" disabled="disabled" title="Manage the sound settings.">Settings</button>
+        <button routerLink="/help" [queryParams]="{return: '/gameMenu'}" title="Show the list of shortcuts.">Help</button>
+        <button routerLink="{{gameUrl}}" title="Continue with the game.">Continue</button>
+        <button (click)="onExit()" title="Exit this game.">Exit</button>
+    </div>
+
+</app-dialog>
+<app-message-box></app-message-box>

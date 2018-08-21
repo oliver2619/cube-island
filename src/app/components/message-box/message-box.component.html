@@ -1,0 +1,12 @@
+<div class="messageBox" [hidden]="!visible">
+    <div class="background"></div>
+    <div class="content">
+        <h1><img *ngIf="icon !== null" src="assets/icons/{{icon}}.png">{{title}}</h1>
+        <p>{{message}}</p>
+        <div class="buttonGroup">
+            <button (click)="onOk()" title="{{okLabel}}">{{okLabel}}</button>
+            <button (click)="onNo()" [hidden]="!noVisible" title="No">No</button>
+            <button (click)="onCancel()" [hidden]="!cancelVisible" title="Cancel">Cancel</button>
+        </div>
+    </div>
+</div>

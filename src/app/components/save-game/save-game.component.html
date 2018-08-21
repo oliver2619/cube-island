@@ -1,0 +1,12 @@
+<app-dialog title="Save game">
+    <form [formGroup]="formGroup">
+        <div class="inputGroup" title="Name of the game to be saved.">
+            <input #name type="text" formControlName="name" placeholder="Please enter a name">
+        </div>
+        <div class="buttonGroup">
+            <button (click)="onSave()" [disabled]="!canSave()" title="Save">Save</button>
+            <button routerLink="{{gameUrl}}" title="Cancel">Cancel</button>
+        </div>
+    </form>
+</app-dialog>
+<app-message-box></app-message-box>

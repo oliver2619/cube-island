@@ -1,0 +1,276 @@
+@borderColor: gray;
+@fontFamily: Segoe UI, sans-serif;
+@fontSize: 16pt;
+@textColor: white;
+@backgroundColor: white;
+
+body {
+    background-color: gray;
+    font-family: @fontFamily;
+    font-size: @fontSize;
+    margin: 0px;
+    padding: 0px;
+}
+
+canvas {
+    border: 0px none black;
+    outline: 1px solid white;
+}
+
+canvas.fullscreen {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 1;
+}
+
+input[type=text], input[type=number], select {
+    border: 1px solid black;
+    border-radius: 4px;
+    outline: none;
+}
+
+input:focus, select:focus {
+    box-shadow: 0px 0px 16px white;
+}
+
+.background {
+    background-image: url('assets/textures/woodPlank.png');
+    border-radius: 8px;
+    border: 1px solid black;
+    box-shadow: 0px 0px 16px black;
+}
+
+button, a.button {
+    background-image: url('assets/textures/marble.png');
+    box-shadow: 2px 2px 2px black;
+    border-top-color: white;
+    border-left-color: white;
+    border-right-color: black;
+    border-bottom-color: black;
+    border-width: 3px;
+    outline: none;
+    border-radius: 4px;
+    border-style: solid;
+    display: inline-block;
+    font-size: @fontSize;
+    font-family: @fontFamily;
+    font-weight: bold;
+    padding: .5rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    margin: 0px;
+}
+
+button:active:hover, a.button:active:hover {
+    border-top-color: black;
+    border-left-color: black;
+    border-right-color: black;
+    border-bottom-color: black;
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+.tabGroup {
+    .tabHeader {
+        display: flex;
+
+        button.tab {
+            background-image: url('assets/textures/woodPlank.png');
+            border-style: solid;
+            border-color: black;
+            box-shadow: none;
+            border-radius: 0px;
+            border-bottom-width: 0px;
+            border-bottom-style: none;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            border-width: 1px;
+            margin: 0px;
+            display: inline-block;
+        }
+
+        button.tab:active:hover {
+            transform: translateY(0px);
+        }
+
+        button.tab.active {
+            transform: translateY(1px) !important;
+        }
+    }
+
+    .tabContent {
+        background-image: url('assets/textures/woodPlank.png');
+        border: 1px solid black;
+        box-shadow: 2px 2px 2px black;
+        padding: 1rem;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+}
+
+.dialog {
+    min-width: 40%;
+}
+
+.dialog.full {
+    min-height: 90%;
+    min-width: 90%;
+}
+
+.dialog, .messageBox  {
+    color: black;
+    display: block;
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+
+    .background {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+    }
+
+    button, a.button, h1, td, th, p, label, select, input[type=text], input[type=number], .tabGroup {
+        text-shadow: 1px 1px 1px #ffffff;
+    }
+
+    .buttonGroup {
+        display: block;
+        margin: auto;
+        margin-top: 1rem;
+        margin-bottom: 0rem;
+        text-align: center;
+
+        button, a.button {
+            display: inline-block;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            margin-left: 1rem;
+        }
+
+        button:first-child {
+            margin-left: 0rem;
+        }
+    }
+
+    .buttonGroup.vertical {
+
+        button, a.button {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 80%;
+        }
+    }
+    
+    .buttonGroup.bottom {
+        position: absolute;
+        bottom: 1rem;
+        left: 2rem;
+        right: 2rem;
+    }
+    
+    .content {
+        padding: 2rem;
+    }
+
+    .inputGroup {
+        display: table;
+        width: 100%;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+
+        label {
+            display: block;
+        }
+    }
+
+    input[type=text], input[type=number], select{
+        display: block;
+        padding: .5rem;
+        margin-top: .5rem;
+        margin-bottom: .5rem;
+        font-size: @fontSize;
+        font-family: @fontFamily;
+    }
+
+    input[type=checkbox] {
+        display: inline-block;
+        margin: 0px;
+        margin-right: 1rem;
+        font-size: @fontSize;
+    }
+
+    h1 {
+        margin: auto;
+        margin-top: 0rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        font-family: @fontFamily;
+        font-weight: normal;
+
+        img {
+            vertical-align: middle;
+            margin-right: 1rem;
+        }
+    }
+
+    label em {
+        text-decoration: underline;
+        font-style: normal;
+    }
+
+    table {
+        margin: auto;
+        margin-top: .5rem;
+        margin-bottom: .5rem;
+
+        td {
+            padding: .5rem;
+            vertical-align: top;
+        }
+
+        td.number {
+            text-align: right;
+        }
+
+        th {
+            padding: .5rem;
+            text-align: left;
+            vertical-align: top;
+        }
+        
+        td ~ th {
+            padding-left: 2rem;
+        }
+    }
+}
+
+ul.selectable {
+    background-color: white;
+    list-style-type: none;
+    margin: 0px;
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+    border: 1px solid black;
+    padding: 0px;
+    max-height: 24rem;
+    overflow-y: scroll;
+    
+    li {
+        margin: 0px;
+        padding: .5rem;
+        cursor: pointer;
+    }
+    
+    li.selected {
+        background-color: black;
+        color: white;
+    }
+}
+
+[hidden] { display: none !important;}

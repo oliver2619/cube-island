@@ -1,0 +1,18 @@
+<app-dialog>
+    <div class="tabGroup">
+        <div class="tabHeader">
+            <button class="tab" *ngFor="let g of groups" [ngClass]="{'active': selectedTab === g.id}" (click)="selectTab(g.id)" title="Open recipe for {{g.name}}.">{{g.name}}</button>
+        </div>
+        <div class="tabContent">
+            <app-canvas (click)="onClick($event)" (mousewheel)="onMouseWheel($event)"></app-canvas>
+        </div>
+    </div>
+    <div class="buttonGroup">
+        <button [disabled]="!canNavPrevPage()" (click)="navPrevPage()" title="Show previous recipe.">&lt;</button>
+        <button [disabled]="!canCraft()" (click)="craft(1)" title="Craft the recipe a single time.">Craft</button>
+        <button [disabled]="!canCraft()" (click)="craft(5)" title="Craft the recipe five times.">Craft 5x</button>
+        <button [disabled]="!canCraft()" (click)="craftAll()" title="Craft the recipe as much as possible.">Craft all</button>
+        <button [disabled]="!canNavNextPage()" (click)="navNextPage()" title="Show next recipe.">&gt;</button>
+        <button (click)="onClose()" title="Close">Close</button>
+    </div>
+</app-dialog>

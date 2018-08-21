@@ -1,0 +1,35 @@
+<app-dialog title="Shortcuts" full="true">
+    <table>
+        <tr>
+            <th>Up, down, left, right</th><td>Move</td>
+            <th>F1, H</th><td>Show this help dialog</td>
+        </tr>
+        <tr>
+            <th>1 .. 8,<br>Mouse wheel</th><td>Select inventory slot</td>
+            <th>Return</th><td>Use object / harvest</td>
+        </tr>
+        <tr>
+            <th>Num 1</th><td>Jump</td>
+            <th>Num 0</th><td>Toggle walk / run</td>
+        </tr>
+        <tr>
+            <th>C, Space</th><td>Show crafting options</td>
+            <th>Esc</th><td>Show game menu</td>
+        </tr>
+        <tr>
+            <th>E</th><td>Eat</td>
+            <th>S</th><td>Sleep</td>
+        </tr>
+        <tr>
+            <th>Left mouse button</th><td>Place object / cube</td>
+            <th>Right mouse button</th><td>Remove object / cube</td>
+        </tr>
+        <tr>
+            <th>Page up / down,<br>Ctrl + mouse wheel</th><td>Rotate object</td>
+            <th>Insert</th><td>Toggle cursor mode</td>
+        </tr>
+    </table>
+    <div class="buttonGroup bottom">
+        <button (click)="onClose()" title="Back">Back</button>
+    </div>
+</app-dialog>
