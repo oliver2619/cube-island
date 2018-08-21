@@ -6,6 +6,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --prod --base-href /buddeln/",
+    "buildPublic": "ng build --prod --base-href /cubeIslands/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
