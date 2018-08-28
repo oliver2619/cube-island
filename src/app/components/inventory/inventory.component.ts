@@ -35,7 +35,7 @@ export class InventoryComponent implements OnInit, AfterViewInit {
             it = new InventoryItem(this._scene, this.assetsService.assets);
             this.inventoryItems.push(it);
             it.position = new Vector2((i + .5) * InventoryItem.size, .5 * InventoryItem.size);
-            amount = this.gameService.player.inventory.getAmount(i);
+            amount = this.gameService.player.inventory.getAmountInSlot(i);
             if (amount > 0)
                 it.set(this.gameService.player.inventory.getType(i), amount);
         }
@@ -45,7 +45,7 @@ export class InventoryComponent implements OnInit, AfterViewInit {
             this.chestItems.push(it);
             it.position = new Vector2(((i % 8) + .5) * InventoryItem.size, (5 - Math.floor(i / 8) + .5) * InventoryItem.size);
             if (chest !== undefined) {
-                amount = chest.content.getAmount(i);
+                amount = chest.content.getAmountInSlot(i);
                 if (amount > 0)
                     it.set(chest.content.getType(i), amount);
             }

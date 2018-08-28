@@ -1,4 +1,4 @@
-import {Texture, WebGLRenderer, TextureLoader, ClampToEdgeWrapping, RepeatWrapping} from "three";
+import {Texture, WebGLRenderer, TextureLoader, ClampToEdgeWrapping, RepeatWrapping, CubeCamera} from "three";
 import {Constants} from "./constants";
 import {ResourceLoadingProgress} from "./resourceLoadingProgress";
 
@@ -68,6 +68,7 @@ export class Textures {
     private _bricks: Texture;
     private _clay: Texture;
     private _coal: Texture;
+    private _compost: Texture;
     private _concrete: Texture;
     private _crosshair: Texture;
     private _crosshairDigging: Texture;
@@ -85,6 +86,7 @@ export class Textures {
     private _snow: Texture;
     private _steel: Texture;
     private _stoneBricks: Texture;
+    private _skyCamera: CubeCamera = new CubeCamera(.1, 10, 2048);
     private _sun: Texture;
     private _water: Texture;
     private _woodPlank: Texture;
@@ -97,6 +99,8 @@ export class Textures {
     get clay(): Texture {return this._clay;}
 
     get coal(): Texture {return this._coal;}
+
+    get compost(): Texture {return this._compost;}
 
     get concrete(): Texture {return this._concrete;}
 
@@ -125,6 +129,10 @@ export class Textures {
     get rocks(): Texture {return this._rocks;}
 
     get sand(): Texture {return this._sand;}
+
+    get sky(): Texture {return this._skyCamera.renderTarget.texture;}
+
+    get skyCamera(): CubeCamera {return this._skyCamera;}
 
     get snow(): Texture {return this._snow;}
 
@@ -155,6 +163,7 @@ export class Textures {
         this._bricks = this.load('bricks', 'bricks.png', 1.06, renderer, progress);
         this._clay = this.load('clay', 'clay.png', 1.41, renderer, progress);
         this._coal = this.load('coal', 'coal.jpg', 0.86, renderer, progress);
+        this._compost = this.load('compost', 'compost.png', 0.42, renderer, progress);
         this._concrete = this.load('concrete', 'concrete.png', 0.72, renderer, progress);
         this._crosshair = this.loadClamped('crosshair.png', renderer, progress);
         this._crosshairDigging = this.loadClamped('crosshairDigging.png', renderer, progress);

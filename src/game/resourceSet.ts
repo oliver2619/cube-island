@@ -51,10 +51,12 @@ export class ResourceSet {
 
     private _resources: CollectibleResources[] = [];
 
-    constructor(private _numberOfSlots: number) {
+    constructor(_numberOfSlots: number) {
         for (let i = 0; i < _numberOfSlots; ++i)
             this._resources.push(new CollectibleResources());
     }
+
+    get numberOfSlots(): number {return this._resources.length;}
 
     add(type: CollectibleType, amount: number): number {
         let remaining = amount;
@@ -90,7 +92,7 @@ export class ResourceSet {
     canAdd(type: CollectibleType, amount: number): boolean {
         let remaining = amount;
         let s: CollectibleResources;
-        for (let i = 0; i < this._numberOfSlots; ++i) {
+        for (let i = 0; i < this.numberOfSlots; ++i) {
             s = this._resources[i];
             if (s.amount === 0 || (s.type === type && s.amount < Constants.maxCubesPerSlot)) {
                 remaining -= Constants.maxCubesPerSlot - s.amount;
@@ -107,13 +109,22 @@ export class ResourceSet {
     }
 
     clone(): ResourceSet {
-        const ret = new ResourceSet(this._numberOfSlots);
+        const ret = new ResourceSet(this.numberOfSlots);
         for (let i = 0; i < this._resources.length; ++i)
             ret._resources[i] = this._resources[i].clone();
         return ret;
     }
 
-    getAmount(slot: number): number {return this._resources[slot].amount;}
+    getAmount(type: CollectibleType): number {
+        let ret = 0;
+        this._resources.forEach(r => {
+            if (r.type === type)
+                ret += r.amount;
+        });
+        return ret;
+    }
+    
+    getAmountInSlot(slot: number): number {return this._resources[slot].amount;}
 
     getType(slot: number): CollectibleType {return this._resources[slot].type;}
 

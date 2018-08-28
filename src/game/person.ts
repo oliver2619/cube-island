@@ -5,7 +5,7 @@ import {World} from "./world";
 import {CollisionMnemento} from "./collision";
 import {ObjectControl} from "./objects";
 import {HUD} from "./hud";
-import {CollectibleType, CollectibleTypeFactory, Collectible} from "./collectible";
+import {CollectibleType, CollectibleTypeFactory, Collectible, DiggingControl} from "./collectible";
 import {Vector3StoreData} from "./commonStoreData";
 import {ResourceSetStoreData, ResourceSet} from "./resourceSet";
 import {StaticObject} from "./staticObject";
@@ -60,9 +60,11 @@ export class Person {
         this._health += amount;
         if (this._health > 1)
             this._health = 1;
+        else if (this._health < 0)
+            this._health = 0;
         this.updateHudAttributes();
     }
-    
+
     animate(timeout: number, worldSize: number): void {
         this.object.position.addScaledVector(this.speed, timeout);
         if (this.object.position.x < Person.WIDTH) {
@@ -145,16 +147,14 @@ export class Person {
     canSleep(): boolean {return this.awake < Constants.sleepThreshold;}
 
     eat(): void {
-        if (this._inventory.getAmount(this.hud.selectedInventorySlot) === 0)
+        if (this.canEatFromSlot(this.hud.selectedInventorySlot)) {
+            this.eatFromSlot(this.hud.selectedInventorySlot);
             return;
-        const ty = this._inventory.getType(this.hud.selectedInventorySlot);
-        if (ty.canEat()) {
-            const r = this._inventory.removeFromSlot(this.hud.selectedInventorySlot, 1);
-            if (r > 0) {
-                this.feed += ty.nutritiveValue;
-                if (this.feed > 1)
-                    this.feed = 1;
-                this.updateHudAttributes();
+        }
+        for (let i = 0; i < this._inventory.numberOfSlots; ++i) {
+            if (this.canEatFromSlot(i)) {
+                this.eatFromSlot(i);
+                return;
             }
         }
     }
@@ -346,7 +346,7 @@ export class Person {
     }
 
     updateCursor(world: World): void {
-        if (this._inventory.getAmount(this.hud.selectedInventorySlot) > 0) {
+        if (this._inventory.getAmountInSlot(this.hud.selectedInventorySlot) > 0) {
             const ty = this._inventory.getType(this.hud.selectedInventorySlot);
             if (ty.canBuild()) {
                 const newPos = this.getBuildCursor(world);
@@ -375,7 +375,7 @@ export class Person {
     }
 
     private build(world: World): void {
-        if (this._inventory.getAmount(this.hud.selectedInventorySlot) === 0)
+        if (this._inventory.getAmountInSlot(this.hud.selectedInventorySlot) === 0)
             return;
         const newPos = this.getBuildCursor(world);
         if (newPos === undefined)
@@ -398,6 +398,12 @@ export class Person {
         return ray;
     }
 
+    private canEatFromSlot(slot: number): boolean {
+        if (this._inventory.getAmountInSlot(slot) === 0)
+            return false;
+        return this._inventory.getType(slot).canEat();
+    }
+
     private dig(world: World, timeout: number): void {
         const selectedPos = this.getDiggingCursor(world);
         if (selectedPos === undefined) {
@@ -406,28 +412,50 @@ export class Person {
             return;
         }
         const col = world.getCollectible(selectedPos.x, selectedPos.y, selectedPos.z);
+        // TODO check if can dig collectible
         if (col !== null && col.isHarvestable()) {
             if (this.diggingPosition !== null && selectedPos.equals(this.diggingPosition)) {
                 this.diggingTime += timeout * this._health;
                 if (this.diggingTime >= this.diggingTotalTime) {
-                    if (this._inventory.add(col.type, 1) === 1) {
-                        world.removeCollectible(this.diggingPosition.x, this.diggingPosition.y, this.diggingPosition.z, true);
-                        this.diggingPosition = null;
-                        this.diggingTime = 0;
-                    }
+                    const diggingControl: DiggingControl = {
+                        collect: (type: CollectibleType, amount: number) => {
+                            return this._inventory.add(type, amount) > 0;
+                        },
+                        removeTarget: () => {
+                            world.removeCollectible(this.diggingPosition.x, this.diggingPosition.y, this.diggingPosition.z, true);
+                        },
+                        stack: (type: CollectibleType, amount: number) => {
+                            let h = world.getHeight(this.diggingPosition.x, this.diggingPosition.y);
+                            for (let i = 0; i < amount; ++i) {
+                                world.addCollectible(type, new Vector3(this.diggingPosition.x, this.diggingPosition.y, h), 0, true);
+                                ++h;
+                            }
+
+                        }
+                    };
+                    col.type.dig(diggingControl);
+                    this.diggingPosition = null;
+                    this.diggingTime = 0;
                 }
             } else {
-                if (this._inventory.canAdd(col.type, 1)) {
-                    this.diggingPosition = selectedPos;
-                    this.diggingTotalTime = col.type.diggingTime;
-                } else {
-                    this.diggingPosition = null;
-                }
+                this.diggingPosition = selectedPos;
+                this.diggingTotalTime = col.type.diggingTime;
                 this.diggingTime = 0;
             }
         } else {
             this.diggingPosition = null;
             this.diggingTime = 0;
+        }
+    }
+
+    private eatFromSlot(slot: number): void {
+        const ty = this._inventory.getType(slot);
+        const r = this._inventory.removeFromSlot(slot, 1);
+        if (r > 0) {
+            this.feed += ty.nutritiveValue;
+            if (this.feed > 1)
+                this.feed = 1;
+            this.addHealth(ty.healingValue);
         }
     }
 

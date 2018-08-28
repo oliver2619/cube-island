@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {World, NewGameSettings} from '../../game/world';
+import {World, NewGameSettings, WorldStoreData} from '../../game/world';
 import {RenderService} from './render.service';
 import {Clock} from 'three';
 import {InputControlService} from './input-control.service';
@@ -9,6 +9,7 @@ import {AssetsService} from './assets.service';
 import {ChestImp, ObjectControl} from '../../game/objects';
 import {ObjectAnimation} from '../../game/objectAnimation';
 import * as LZString from 'lz-string';
+import {FactoryType} from '../../game/factoryType';
 
 @Injectable()
 export class GameService {
@@ -19,6 +20,7 @@ export class GameService {
     private _animationFrameHandle: number;
     private _world: World;
     private _chest: ChestImp;
+    private _worldName: string;
 
     constructor(private renderService: RenderService, private inputControlService: InputControlService, private assetsService: AssetsService, private navigationService: NavigationService) {
         this.inputControlService.onMouseMove.push((x, y) => {
@@ -28,16 +30,20 @@ export class GameService {
         this.inputControlService.onMouseWheel.push((x, y) => this.mouseWheel(x + y));
         this.inputControlService.onSelectSlot.push((index) => this._world.selectedInventorySlot = index - 1);
         this.inputControlService.onSleep.push(() => this._world.sleep());
-        this.inputControlService.onCraft.push(() => navigationService.toggleCraftMenu());
+        this.inputControlService.onCraft.push(() => navigationService.toggleCraftMenu(FactoryType.NONE));
         this.inputControlService.onEat.push(() => this._world.person.eat());
         this.inputControlService.onRotateObject.push(amount => this._world.person.rotateObject(amount));
-        const objectControl: ObjectControl = new ObjectControl();
-        objectControl.addAnimation = (animation: ObjectAnimation) => {
-            this._world.addAnimation(animation);
-        };
-        objectControl.openChest = (chest: ChestImp) => {
-            this._chest = chest;
-            navigationService.toggleInventoryMenu();
+        const objectControl: ObjectControl = {
+            addAnimation: (animation: ObjectAnimation) => {
+                this._world.addAnimation(animation);
+            },
+            craft: (factoryType: FactoryType) => {
+                navigationService.toggleCraftMenu(factoryType);
+            },
+            openChest: (chest: ChestImp) => {
+                this._chest = chest;
+                navigationService.toggleInventoryMenu();
+            }
         };
         this.inputControlService.onUseObject.push(() => this._world.person.useObject(this._world, objectControl));
         this.inputControlService.onToggleCursorMode.push(() => this._world.toggleCursorMode());
@@ -49,6 +55,8 @@ export class GameService {
 
     set selectedChest(chest: ChestImp) {this._chest = chest;}
 
+    get worldName(): string {return this._worldName;}
+    
     deleteSavedGame(name: string): void {window.localStorage.removeItem(GameService.PREFIX_SAVED_GAME + name);}
 
     exitGame(): void {
@@ -70,6 +78,7 @@ export class GameService {
     isGameSaved(name: string): boolean {return window.localStorage.getItem(GameService.PREFIX_SAVED_GAME + name) !== null;}
 
     newGame(settings: NewGameSettings): void {
+        this._worldName = settings.name;
         this._world = new World(this.assetsService.assets);
         this._world.newGame(settings);
         this._chest = undefined;
@@ -79,12 +88,15 @@ export class GameService {
     loadGame(name: string): void {
         this._world = new World(this.assetsService.assets);
         const str = window.localStorage.getItem(GameService.PREFIX_SAVED_GAME + name);
-        this._world.loadGame(JSON.parse(LZString.decompressFromUTF16(str)));
+        const input: WorldStoreData = JSON.parse(LZString.decompressFromUTF16(str));
+        this._world.loadGame(input);
+        this._worldName = name;
         this._chest = undefined;
         this.start();
     }
 
     saveGame(name: string): boolean {
+        this._worldName = name;
         const data = this._world.saveGame();
         const str = JSON.stringify(data);
         console.log('Saving ' + Math.floor(str.length / 1024) + ' kb');

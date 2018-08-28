@@ -9,9 +9,6 @@ Enjoy the lack of advertisments and ingame sellings!
 
 1. Collision tests with cubes, person is jumping too much.
 2. Slowing down is too abrupt.
-3. Vertex colors update for ambient occlusion not complete.
-4. Sun sprite.
-5. Moon is not behind the sky.
 
 ## Open features
 
@@ -25,10 +22,11 @@ Enjoy the lack of advertisments and ingame sellings!
 8. Simulation of granular cubes
 9. While sleeping simulation goes on
 10. Some more types of cubes (e.g. gold)
-11. Some more objects (Furnace, bed, compost)
-12. Beautify sky, add clouds and weather
+11. Bed
+12. Clouds and weather
 13. Use name of map as seed for pseudo-random number generator
 14. Download / upload game state
 15. Water shader with reflection
 16. Beautify cubes (bumpmaps, material parameters)
+
 and lots more.

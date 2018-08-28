@@ -1,11 +1,16 @@
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
+import {FactoryType} from '../../game/factoryType';
 
 @Injectable()
 export class NavigationService {
 
+    private _factoryType: FactoryType;
+    
     constructor(private router: Router) {}
 
+    get factoryType(): FactoryType {return this._factoryType;}
+    
     get gameUrl(): string {return '/game';}
 
     get mainMenuUrl(): string {return '/main';}
@@ -31,7 +36,8 @@ export class NavigationService {
 
     showMainMenu(): void {this.router.navigateByUrl(this.mainMenuUrl);}
 
-    toggleCraftMenu(): void {
+    toggleCraftMenu(factoryType: FactoryType): void {
+        this._factoryType = factoryType;
         if (this.router.url === this.gameUrl)
             this.router.navigateByUrl("craft")
         else if (this.router.url === '/craft')

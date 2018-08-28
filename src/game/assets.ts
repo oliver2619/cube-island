@@ -6,7 +6,11 @@ import {ResourceLoadingProgress} from "./resourceLoadingProgress";
 import {Materials} from "./materials";
 
 export class Objects {
+    private _barSteel: Object3D;
+    
     private _chest: Object3D;
+
+    private _compost: Object3D;
 
     private _cube: Mesh;
 
@@ -24,15 +28,29 @@ export class Objects {
 
     private _flowerPink = new LOD();
 
+    private _furnace: Object3D;
+
     private _mushroom: Object3D;
 
     private _stairsStone: Object3D;
 
     private _stairsWood: Object3D;
 
+    private _stickWood: Object3D;
+
+    private _stonemill: Object3D;
+
+    private _tree: Object3D;
+
     private _window: Object3D;
 
+    private _workbench: Object3D;
+
+    get barSteel(): Object3D {return this._barSteel.clone(false);}
+
     get chest(): Object3D {return this._chest.clone(true);}
+
+    get compost(): Object3D {return this._compost.clone(false);}
 
     get doorWood(): Object3D {return this._doorWood.clone(true);}
 
@@ -48,13 +66,23 @@ export class Objects {
 
     get flowerPink(): Object3D {return this._flowerPink.clone(false);}
 
+    get furnace(): Object3D {return this._furnace.clone(false);}
+
     get mushroom(): Object3D {return this._mushroom.clone(false);}
 
     get stairsStone(): Object3D {return this._stairsStone.clone(false);}
 
     get stairsWood(): Object3D {return this._stairsWood.clone(false);}
 
+    get stickWood(): Object3D {return this._stickWood.clone(false);}
+
+    get stonemill(): Object3D {return this._stonemill.clone(false);}
+
+    get tree(): Object3D {return this._tree.clone(true);}
+
     get window(): Object3D {return this._window.clone(false);}
+
+    get workbench(): Object3D {return this._workbench.clone(false);}
 
     getCube(material: Material, materialTop?: Material, materialBottom?: Material): Object3D {
         const ret = this._cube.clone(true);
@@ -98,6 +126,15 @@ export class Objects {
             this._flowerPink.addLevel(this.replaceFlowerMaterial(obj, 0xCE0A93), 10);
             progress.resourceLoaded();
         });
+        // bar
+        l = new CustomColladaLoader();
+        l.scale = Constants.cubeSize;
+        l.materialMapper = material => materials.steelObject;
+        progress.addResource();
+        l.load('assets/objects/bar.dae', (obj) => {
+            this._barSteel = obj;
+            progress.resourceLoaded();
+        });
         // chest
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
@@ -107,16 +144,31 @@ export class Objects {
             this._chest = obj;
             progress.resourceLoaded();
         });
+        // compost
+        l = new CustomColladaLoader();
+        l.scale = Constants.cubeSize;
+        l.materialMapper = material => materials.compost;
+        progress.addResource();
+        l.load('assets/objects/compost.dae', (obj) => {
+            this._compost = obj;
+            progress.resourceLoaded();
+        });
         // fence
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
         l.materialMapper = material => materials.woodPlankObject;
-        l.textureMapper = (materialName, texture) => {
-            return textures.woodPlank;
-        };
         progress.addResource();
         l.load('assets/objects/fence.dae', (obj) => {
             this._fence = obj;
+            progress.resourceLoaded();
+        });
+        // furnace
+        l = new CustomColladaLoader();
+        l.scale = Constants.cubeSize;
+        l.materialMapper = material => materials.stoneBricksObject;
+        progress.addResource();
+        l.load('assets/objects/furnace.dae', (obj) => {
+            this._furnace = obj;
             progress.resourceLoaded();
         });
         // mushroom
@@ -146,6 +198,25 @@ export class Objects {
             this._stairsWood = obj;
             progress.resourceLoaded();
         });
+        // stonemill
+        l = new CustomColladaLoader();
+        l.scale = Constants.cubeSize;
+        l.materialMapper = material => materials.rocksObject;
+        progress.addResource();
+        l.load('assets/objects/stonemill.dae', (obj) => {
+            this._stonemill = obj;
+            progress.resourceLoaded();
+        });
+        // tree
+        l = new CustomColladaLoader();
+        l.scale = Constants.cubeSize;
+        l.materialMapper = (material) => materials.barkCubeObject;
+        progress.addResource();
+        l.load('assets/objects/tree.dae', (obj) => {
+            this._tree = obj;
+            progress.resourceLoaded();
+
+        });
         // window
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
@@ -173,6 +244,26 @@ export class Objects {
         progress.addResource();
         l.load('assets/objects/door.dae', (obj) => {
             this._doorWood = obj;
+            progress.resourceLoaded();
+
+        });
+        // wooden door
+        l = new CustomColladaLoader();
+        l.scale = Constants.cubeSize;
+        l.materialMapper = (material) => materials.woodPlankObject;
+        progress.addResource();
+        l.load('assets/objects/woodenStick.dae', (obj) => {
+            this._stickWood = obj;
+            progress.resourceLoaded();
+
+        });
+        // workbench
+        l = new CustomColladaLoader();
+        l.scale = Constants.cubeSize;
+        l.materialMapper = (material) => materials.woodPlankObject;
+        progress.addResource();
+        l.load('assets/objects/workbench.dae', (obj) => {
+            this._workbench = obj;
             progress.resourceLoaded();
 
         });
@@ -282,7 +373,7 @@ export class Assets {
         const progress: ResourceLoadingProgress = new ResourceLoadingProgress(complete);
         this._iconTextures.init(progress);
         this._textures.init(renderer, progress);
-        this._materials.init(this._textures);
+        this._materials.init(this._textures, progress);
         this._cube = new BoxBufferGeometry(Constants.cubeSize, Constants.cubeSize, Constants.cubeSize, 1, 1, 1);
         this._objects.init(this._textures, this._materials, progress);
     }

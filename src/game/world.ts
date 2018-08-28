@@ -1,5 +1,5 @@
-import {Scene, PerspectiveCamera, FogExp2, Color, Geometry, Vector3, Vector2, Face3, Mesh, Object3D, WebGLRenderer, Camera, PCFSoftShadowMap, BasicShadowMap, PCFShadowMap, LOD} from "three";
-import {Sun, SunStoreData} from "./sun";
+import {Scene, PerspectiveCamera, FogExp2, Geometry, Vector3, Vector2, Face3, Mesh, Object3D, WebGLRenderer, Camera, PCFShadowMap, LOD} from "three";
+import {SunStoreData} from "./sun";
 import {Person, PersonStoreData} from "./person";
 import {InputControlService} from "../app/services/input-control.service";
 import {Assets} from "./assets";
@@ -22,6 +22,8 @@ export interface NewGameSettings {
     numberOfClusters: number;
     monsters: boolean;
     infiniteLife: boolean;
+    latitude: number;
+    name: string;
 }
 
 export class GameSettingsStoreData {
@@ -62,7 +64,6 @@ export class WorldStoreData {
 }
 
 export class World {
-
     private scene = new Scene();
     private sky: Sky;
     private _person: Person;
@@ -77,13 +78,15 @@ export class World {
     private cursorObject: Object3D;
     private cursorType: CollectibleType;
     private staticObjects: StaticObject<any>[] = [];
-    private simulationSlots: SimulationSlots = new SimulationSlots(16);
+    private simulationSlots: SimulationSlots = new SimulationSlots(32);
     private _gameSettings = new GameSettings();
 
     constructor(private assets: Assets) {
         this.hud = new HUD(assets);
         this.sky = new Sky(this.scene, assets);
         this.waterMesh.material = assets.materials.water;
+        this.waterMesh.castShadow = false;
+        this.waterMesh.receiveShadow = false;
     }
 
     get person(): Person {return this._person;}
@@ -105,7 +108,7 @@ export class World {
         if (type instanceof CubeType) {
             return this.addCube(<CubeType> type, pos, update);
         } else {
-            return this.addStaticObject(pos, rotation, <ObjectType<any>> type);
+            return this.addStaticObject(pos, rotation, <ObjectType<any>> type, update);
         }
     }
 
@@ -133,7 +136,7 @@ export class World {
             return null;
     }
 
-    addStaticObject<T>(newPos: Vector3, rotation: number, type: ObjectType<T>): StaticObject<T> {
+    addStaticObject<T>(newPos: Vector3, rotation: number, type: ObjectType<T>, update?: boolean): StaticObject<T> {
         const obj = new StaticObject(newPos, rotation, type, this.assets);
         for (let ix = obj.x1; ix <= obj.x2; ++ix) {
             for (let iy = obj.y1; iy <= obj.y2; ++iy) {
@@ -145,6 +148,9 @@ export class World {
                     }
                 }
             }
+        }
+        if (type.coversFloor() && update) {
+            this.getClusters(obj.x1, obj.y1, obj.x2, obj.y2).forEach(c => c.init(this.scene, this.assets));
         }
         this.scene.add(obj.object3D);
         this.staticObjects.push(obj);
@@ -298,7 +304,7 @@ export class World {
         this._gameSettings.monsters = settings.monsters;
         this._gameSettings.infiniteLife = settings.infiniteLife;
 
-        this.sky.newGame();
+        this.sky.newGame(settings);
 
         this._person = new Person(this.hud);
         this._person.newGame();
@@ -342,15 +348,7 @@ export class World {
             const cy = y % CubeCluster.SIZE;
             const ret = cluster.removeCube(cx, cy, z);
             if (ret !== null && update === true) {
-                cluster.init(this.scene, this.assets);
-                if (cx === 0 && cluster.prevX !== null)
-                    cluster.prevX.init(this.scene, this.assets);
-                else if (cx === CubeCluster.SIZE - 1 && cluster.nextX !== null)
-                    cluster.nextX.init(this.scene, this.assets);
-                if (cy === 0 && cluster.prevY !== null)
-                    cluster.prevY.init(this.scene, this.assets);
-                else if (cy === CubeCluster.SIZE - 1 && cluster.nextY !== null)
-                    cluster.nextY.init(this.scene, this.assets);
+                this.getClusters(x - 1, y - 1, x + 1, y + 1).forEach(c => c.init(this.scene, this.assets));
             }
             if (ret !== null) {
                 const obj = this.getStaticObject(x, y, z + 1);
@@ -377,6 +375,9 @@ export class World {
                     }
                 }
             }
+        }
+        if (obj.objectType.coversFloor() && update) {
+            this.getClusters(obj.x1, obj.y1, obj.x2, obj.y2).forEach(c => c.init(this.scene, this.assets));
         }
         this.scene.remove(obj.object3D);
         this.staticObjects = this.staticObjects.filter(o => o !== obj);
@@ -442,6 +443,9 @@ export class World {
             }
         }
         this.updateWater();
+        const length = this._size * Constants.cubeSize;
+        const height = CubeCluster.HEIGHT * Constants.cubeSize;
+        this.sky.setWorldDimensions(new Vector3(length / 2, length / 2, height / 2), Math.sqrt(length * length / 2 + height * height / 4));
     }
 
     sleep(): void {
@@ -473,6 +477,10 @@ export class World {
             }
             this.cursorType = type;
             this.cursorObject = type.createForCursor(this.assets);
+            this.cursorObject.traverse(obj => {
+                obj.castShadow = false;
+                obj.receiveShadow = false;
+            });
             this.scene.add(this.cursorObject);
         }
         if (this.cursorObject !== undefined) {
@@ -511,6 +519,19 @@ export class World {
         return null;
     }
 
+    private getClusters(x1: number, y1: number, x2: number, y2: number): CubeCluster[] {
+        const ret: CubeCluster[] = [];
+        let cluster: CubeCluster;
+        for (let x = x1; x <= x2; ++x) {
+            for (let y = y1; y <= y2; ++y) {
+                cluster = this.getCluster(x, y);
+                if (ret.find(c => c === cluster) === undefined)
+                    ret.push(cluster);
+            }
+        }
+        return ret;
+    }
+
     private initScene(): void {
         this.cubeClusters.forEach(c1 => {
             c1.forEach(c2 => c2.init(this.scene, this.assets));
@@ -535,7 +556,7 @@ export class World {
         const h = this.getHeight(x, y);
         const cube = this.getCube(x, y, h - 1);
         if (cube.cubeType === CollectibleTypes.GRAS && this.getCollectible(x, y, h) === null) {
-            this.addStaticObject(new Vector3(x, y, h), 0, CollectibleTypes.randomPlant());
+            this.addStaticObject(new Vector3(x, y, h), 0, CollectibleTypes.randomPlant(), true);
         }
     }
 

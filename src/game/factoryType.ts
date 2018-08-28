@@ -1,0 +1,4 @@
+export enum FactoryType {
+    NONE, WORK_BENCH, STONE_MILL, FURNACE_METAL, FURNACE_KITCHEN, COMPOST
+}
+

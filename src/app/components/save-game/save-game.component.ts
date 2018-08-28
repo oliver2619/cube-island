@@ -19,19 +19,39 @@ export class SaveGameComponent implements OnInit {
 
     formGroup: FormGroup;
 
+    private _selected: string = null;
+    private _savedGames: string[] = [];
+
     constructor(private navigationService: NavigationService, private gameService: GameService, formBuilder: FormBuilder) {
         this.formGroup = formBuilder.group({
-            name: ['', Validators.required]
+            name: [gameService.worldName, Validators.required]
+        });
+        this.formGroup.get('name').valueChanges.subscribe(c => {
+            if (c !== this._selected)
+                this._selected = null;
         });
     }
 
     get gameUrl(): string {return this.navigationService.gameUrl;}
 
+    get savedGames(): string[] {
+        return this._savedGames;
+    }
+
+    get selected(): string {
+        return this._selected;
+    }
+
     canSave(): boolean {
         return this.formGroup.valid;
     }
 
+    hasSavedGames(): boolean {
+        return this._savedGames.length > 0;
+    }
+
     ngOnInit() {
+        this.updateList();
         (<HTMLElement> this.input.nativeElement).focus();
     }
 
@@ -46,11 +66,21 @@ export class SaveGameComponent implements OnInit {
             this.save(name);
     }
 
+    select(g: string): void {
+        this._selected = g;
+        this.formGroup.get('name').setValue(g);
+    }
+
     private save(name: string): void {
         if (!this.gameService.saveGame(name)) {
             this.messageBox.error('Failed to save game.');
             return;
         }
         this.navigationService.showGame();
+    }
+
+    private updateList(): void {
+        this._savedGames = this.gameService.getSavedGames();
+        this._savedGames.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
     }
 }

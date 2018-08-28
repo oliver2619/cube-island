@@ -7,6 +7,7 @@ import {CanvasComponent} from '../canvas/canvas.component';
 import {OrthographicCamera, Scene, DirectionalLight, AmbientLight, Group, PlaneBufferGeometry, MeshBasicMaterial, NormalBlending, Mesh, Object3D} from 'three';
 import {InventoryItem} from '../../../game/hud';
 import {AssetsService} from '../../services/assets.service';
+import {FactoryType} from '../../../game/factoryType';
 
 interface CraftTabGroup {
     id: string;
@@ -137,16 +138,14 @@ export class CraftComponent implements OnInit, AfterViewInit {
         return ret;
     }
 
-    private calculateCanCraft(): boolean {
-        if (this._selectedRecipe === undefined)
-            return false;
-        const rec = this.getRecipesForPage()[this._selectedRecipe];
+    private calculateCanCraft(recipeIndex: number): boolean {
+        const rec = this.getRecipesForPage()[recipeIndex];
         if (rec === undefined)
             return false;
         const inv = this._person.inventory.clone();
         // TODO use find
         let ret = true;
-        rec.sources.forEach((r, i) => {
+        rec.sources.forEach(r => {
             if (inv.remove(r.type, r.amount) < r.amount) {
                 ret = false;
             }
@@ -159,22 +158,24 @@ export class CraftComponent implements OnInit, AfterViewInit {
     private _craft(): void {
         const rec = this.getRecipesForPage()[this._selectedRecipe];
         const inv = this._person.inventory;
-        rec.sources.forEach((r) => inv.remove(r.type, r.amount));
+        rec.sources.forEach(r => inv.remove(r.type, r.amount));
         inv.add(rec.product.type, rec.product.amount);
-        this._canCraftSelected = this.calculateCanCraft();
+        this._canCraftSelected = this.calculateCanCraft(this._selectedRecipe);
     }
 
     private init(): void {
         this._recipeByGroup = {};
         let arr: CraftRecipe[];
-        CraftRecipes.all.forEach(r => {
-            let arr = this._recipeByGroup[r.group.id];
-            if (arr === undefined) {
-                this._recipeByGroup[r.group.id] = [];
-                arr = this._recipeByGroup[r.group.id];
-            }
-            arr.push(r);
-        });
+        CraftRecipes.all
+            .filter(r => r.factoryType === this.navigationService.factoryType)
+            .forEach(r => {
+                let arr = this._recipeByGroup[r.group.id];
+                if (arr === undefined) {
+                    this._recipeByGroup[r.group.id] = [];
+                    arr = this._recipeByGroup[r.group.id];
+                }
+                arr.push(r);
+            });
 
         this._groups = [];
         let gr: CraftGroup;
@@ -215,8 +216,10 @@ export class CraftComponent implements OnInit, AfterViewInit {
     }
 
     private select(row: number): void {
+        if (row >= this.getRecipesForPage().length)
+            return;
         this._selectedRecipe = row;
-        this._canCraftSelected = this.calculateCanCraft();
+        this._canCraftSelected = this.calculateCanCraft(this._selectedRecipe);
         this._selectObject.position.y = (5 - row) * InventoryItem.size;
     }
 

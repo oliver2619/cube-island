@@ -1,7 +1,9 @@
-import {Scene, DirectionalLight, AmbientLight, Vector3, Color, SpriteMaterial, Sprite, AdditiveBlending, IFog, PointLight} from "three";
+import {Scene, DirectionalLight, AmbientLight, Vector3, Color, SpriteMaterial, Sprite, AdditiveBlending, IFog, PointLight, LinearFilter, CameraHelper, Texture} from "three";
 import {Constants} from "./constants";
 import {NaturalColors, Colors} from "./naturalColors";
 import {Assets} from "./assets";
+import {SkyObjectPosition} from "./skyObjectPosition";
+import {NewGameSettings} from "./world";
 
 export class SunStoreData {
     localDate: number;
@@ -11,20 +13,22 @@ export class SunStoreData {
 
 export class Sun {
     private static MAX_TIME = Math.PI * 2;
-    private static SUN_ELEVATION = 23.5 * Math.PI / 180;
     private static twilightThreshold = Math.cos((90. - 16.5) * Math.PI / 180);
+    private static SHADOW_DISTANCE_TO_WORLD = 50;
 
+    private _sunPosition = new SkyObjectPosition();
     private directionalLight = new DirectionalLight(0xffffff);
     private ambientLight = new AmbientLight(0x000000);
     private _localDate: number;
     private dateSpeed: number;
     private _localTime: number;
     private timeSpeed: number;
-    private latitude: number;
     private _skyColor: Color;
     private fogColor: Color;
     private sunMaterial: SpriteMaterial;
     private sunSprite: Sprite;
+    private _worldCenter = new Vector3();
+    private _worldRadius: number = 1;
 
     constructor(assets: Assets) {
         this.timeSpeed = Sun.MAX_TIME / Constants.daysInSeconds;
@@ -34,25 +38,25 @@ export class Sun {
         this.sunSprite = new Sprite(this.sunMaterial);
         this.sunSprite.scale.setScalar(1);
         this.directionalLight.castShadow = true;
-        this.directionalLight.shadow.mapSize.x = 4096;
-        this.directionalLight.shadow.mapSize.y = 4096;
-        this.directionalLight.shadow.camera.near = 50;
-        this.directionalLight.shadow.camera.far = 200;
-        this.directionalLight.shadow.camera.left = -100;
-        this.directionalLight.shadow.camera.right = 100;
-        this.directionalLight.shadow.camera.top = -100;
-        this.directionalLight.shadow.camera.bottom = 100;
-        this.directionalLight.shadow.bias = -.002;
-        //this.directionalLight.shadow.radius = 4;
+        this.directionalLight.shadow.mapSize.x = 2048;
+        this.directionalLight.shadow.mapSize.y = 2048;
+        this.directionalLight.shadow.bias = -.005;
+        this.directionalLight.shadow.radius = 4;
     }
 
+    get ambientColor(): Color {return this.ambientLight.color;}
+    
     get localDate(): number {return this._localDate;}
 
     get localTime(): number {return this._localTime;}
 
     get skyColor(): Color {return this._skyColor;}
 
-    get sunPosition(): Vector3 {return this.directionalLight.position.clone();}
+    get sunColor(): Color {return this.directionalLight.color;}
+    
+    get sunPosition(): Vector3 {
+        return this._sunPosition.position.clone();
+    }
 
     animate(timeout: number): void {
         this._localDate += timeout * this.dateSpeed;
@@ -61,35 +65,38 @@ export class Sun {
         this._localTime += timeout * this.timeSpeed;
         if (this._localTime >= Sun.MAX_TIME)
             this._localTime -= Sun.MAX_TIME;
+        this._sunPosition.setTime(this._localTime, this._localDate);
         this.setLight();
     }
 
     deinitSceneLight(scene: Scene): void {
         scene.remove(this.directionalLight);
+        scene.remove(this.directionalLight.target);
         scene.remove(this.ambientLight);
     }
 
     initSceneLight(scene: Scene): void {
         scene.add(this.directionalLight);
+        scene.add(this.directionalLight.target);
         scene.add(this.ambientLight);
     }
 
     initSceneSprite(scene: Scene): void {
-        scene.add(this.sunSprite);
+        //scene.add(this.sunSprite);
     }
 
     load(input: SunStoreData): void {
         this._localDate = input.localDate;
         this._localTime = input.localTime;
-        this.latitude = input.latitude;
+        this._sunPosition.latitude = input.latitude;
 
         this.setLight();
     }
 
-    newGame(): void {
+    newGame(settings: NewGameSettings): void {
         this._localDate = Sun.MAX_TIME * .25;
         this._localTime = Sun.MAX_TIME * .3;
-        this.latitude = 50 * Math.PI / 180;
+        this._sunPosition.latitude = settings.latitude;
 
         this.setLight();
     }
@@ -98,7 +105,7 @@ export class Sun {
         const ret = new SunStoreData();
         ret.localDate = this._localDate;
         ret.localTime = this._localTime;
-        ret.latitude = this.latitude;
+        ret.latitude = this._sunPosition.latitude;
         return ret;
     }
 
@@ -106,19 +113,23 @@ export class Sun {
         fog.color.set(this.ambientLight.color);
     }
 
+    setWorldDimensions(center: Vector3, radius: number) {
+        this._worldCenter = center.clone();
+        this._worldRadius = radius;
+        this.directionalLight.target.position.copy(this._worldCenter);
+        this.directionalLight.shadow.camera.near = Sun.SHADOW_DISTANCE_TO_WORLD;
+        this.directionalLight.shadow.camera.far = this._worldRadius * 2 + Sun.SHADOW_DISTANCE_TO_WORLD;
+        this.directionalLight.shadow.camera.left = -this._worldRadius;
+        this.directionalLight.shadow.camera.right = this._worldRadius;
+        this.directionalLight.shadow.camera.top = -this._worldRadius;
+        this.directionalLight.shadow.camera.bottom = this._worldRadius;
+        this.directionalLight.shadow.camera.updateProjectionMatrix();
+    }
+
     private setLight(): void {
-        const orgZ = new Vector3(-Math.sin(this._localTime) * Math.cos(this.latitude), -Math.cos(this._localTime) * Math.cos(this.latitude), Math.sin(this.latitude));
-        const orgX = new Vector3(0, 0, 1);
-        orgX.cross(orgZ);
-        orgX.normalize();
-        const orgY = orgZ.clone();
-        orgY.cross(orgX);
-        const wiSun = -Sun.SUN_ELEVATION * Math.cos(this._localDate);
-        const sunV = new Vector3(0, Math.cos(wiSun), Math.sin(wiSun));
-        this.directionalLight.position.set(sunV.dot(orgX), sunV.dot(orgY), sunV.dot(orgZ));
-        this.directionalLight.target.position.set(0, 0, 0);
+        this.directionalLight.position.copy(this._sunPosition.position);
         this.sunSprite.position.copy(this.directionalLight.position);
-        this.sunSprite.position.multiplyScalar(2);
+        //this.sunSprite.position.multiplyScalar(2);
 
         const dawn = 1 - Math.max(0, Math.min(1, this.directionalLight.position.z / Sun.twilightThreshold));
         const ambBrightness = Math.max(0, Math.min(1, (Sun.twilightThreshold + this.directionalLight.position.z) / (Sun.twilightThreshold * 2)));
@@ -141,7 +152,8 @@ export class Sun {
         Colors.normalize(this.fogColor);
         this.fogColor.multiplyScalar(dirBrightness);
 
-        this.directionalLight.position.multiplyScalar(100);
+        this.directionalLight.position.multiplyScalar(this._worldRadius + Sun.SHADOW_DISTANCE_TO_WORLD);
+        this.directionalLight.position.add(this.directionalLight.target.position);
 
     }
 }

@@ -1,14 +1,17 @@
-import {Object3D, Mesh, PlaneBufferGeometry, Box3, Vector3} from "three";
+import {Object3D, Mesh, PlaneBufferGeometry, Vector3} from "three";
 import {Assets} from "./assets";
 import {Constants} from "./constants";
 import {CollectibleType, CollectibleTypeFactory} from "./collectible";
 import {ObjectAnimation, SmoothAnimation} from "./objectAnimation";
 import {ResourceSet, ResourceSetStoreData} from "./resourceSet";
 import {StaticObject} from "./staticObject";
-import {CubeType, CubeTypes} from "./cubeTypes";
+import {CubeType} from "./cubeTypes";
+import {FactoryType} from "./factoryType";
 
-export class ObjectControl {
+export interface ObjectControl {
     addAnimation: (animation: ObjectAnimation) => void;
+
+    craft: (factoryType: FactoryType) => void;
 
     openChest: (chestImp: ChestImp) => void;
 }
@@ -17,6 +20,8 @@ export abstract class ObjectType<T> extends CollectibleType {
 
     abstract diggingTime: number;
 
+    get healingValue(): number {return 0;}
+    
     get nutritiveValue(): number {return 0;}
 
     get size(): Vector3 {return new Vector3(1, 1, 1);}
@@ -72,70 +77,6 @@ export abstract class ObjectType<T> extends CollectibleType {
     use(object: StaticObject<T>, control: ObjectControl): boolean {return false;}
 }
 
-export interface PlantImpStoreData {
-    grown: number;
-}
-
-export interface PlantImp {
-    grown: number;
-}
-
-export abstract class ObjectTypePlant extends ObjectType<PlantImp>{
-
-    protected abstract growSpeed: number;
-
-    constructor(id: string) {super(id);}
-
-    canExistOn(cubeType: CubeType): boolean {return cubeType === CubeTypes.GRAS || cubeType === CubeTypes.MUD;}
-
-    create(assets: Assets): Object3D {
-        const ret = this.createPlant(assets);
-        ret.rotation.z = Math.random() * 2 * Math.PI;
-        return ret;
-    }
-
-    initUserData(object: StaticObject<PlantImp>): PlantImp {
-        this.scalePlant(object.object3D, 0);
-        return {
-            grown: 0
-        };
-    }
-
-    isHarvestable(userData: PlantImp): boolean {return userData.grown >= 1;}
-
-    isSimulation(): boolean {return true;}
-
-    load(object: StaticObject<PlantImp>, userData: PlantImpStoreData, factory: CollectibleTypeFactory): PlantImp {
-        const ret: PlantImp = {
-            grown: userData.grown
-        };
-        this.scalePlant(object.object3D, ret.grown);
-        return ret;
-    }
-
-    needsCubeToExist(): boolean {return true;}
-
-    save(userData: PlantImp): PlantImpStoreData {
-        return {
-            grown: userData.grown
-        };
-    }
-
-    simulate(object: StaticObject<PlantImp>, timeout: number): void {
-        object.userData.grown += timeout * this.growSpeed;
-        if (object.userData.grown > 1) {
-            object.userData.grown = 1;
-        }
-        this.scalePlant(object.object3D, object.userData.grown);
-    }
-
-    protected abstract createPlant(assets: Assets): Object3D;
-
-    protected scalePlant(object: Object3D, grown: number): void {
-        object.scale.setScalar(.1 + .9 * grown);
-    }
-}
-
 export interface ChestImpStoreData {
     content: ResourceSetStoreData;
 }
@@ -146,6 +87,15 @@ export interface ChestImp {
     content: ResourceSet;
 
     close?: () => void;
+}
+
+export class ObjectTypeBarSteel extends ObjectType<any> {
+
+    constructor(id: string) {super(id);}
+
+    get diggingTime(): number {return .4 * 2;}
+
+    create(assets: Assets): Object3D {return assets.objects.barSteel;}
 }
 
 export class ObjectTypeChest extends ObjectType<ChestImp> {
@@ -221,6 +171,24 @@ export class ObjectTypeChest extends ObjectType<ChestImp> {
     }
 }
 
+export class ObjectTypeCompost extends ObjectType<any> {
+
+    constructor(id: string) {super(id);}
+
+    get diggingTime(): number {return .4 * 2;}
+
+    get size(): Vector3 {return new Vector3(2, 2, 1);}
+
+    coversFloor(): boolean {return true;}
+
+    create(assets: Assets): Object3D {return assets.objects.compost;}
+
+    use(object: StaticObject<any>, control: ObjectControl): boolean {
+        control.craft(FactoryType.COMPOST);
+        return true;
+    }
+}
+
 export interface DoorImpStoreData {
     closed: boolean;
 }
@@ -241,6 +209,8 @@ export class ObjectTypeDoorWood extends ObjectType<DoorImp> {
     canWalkThrough(userData: DoorImp): boolean {
         return !userData.closed;
     }
+
+    coversFloor(): boolean {return true;}
 
     create(assets: Assets): Object3D {return assets.objects.doorWood;}
 
@@ -307,9 +277,23 @@ export class ObjectTypeFenceWood extends ObjectType<any> {
 
     get diggingTime(): number {return .4;}
 
-    coversFloor(): boolean {return false;}
-
     create(assets: Assets): Object3D {return assets.objects.fence;}
+}
+
+export class ObjectTypeFurnace extends ObjectType<any> {
+
+    constructor(id: string) {super(id);}
+
+    get diggingTime(): number {return .4 * 2;}
+
+    get size(): Vector3 {return new Vector3(3, 3, 2);}
+
+    create(assets: Assets): Object3D {return assets.objects.furnace;}
+
+    use(object: StaticObject<any>, control: ObjectControl): boolean {
+        control.craft(FactoryType.FURNACE_METAL);
+        return true;
+    }
 }
 
 export class ObjectTypeGlas extends ObjectType<any> {
@@ -318,12 +302,9 @@ export class ObjectTypeGlas extends ObjectType<any> {
 
     get diggingTime(): number {return .4;}
 
-    coversFloor(): boolean {return false;}
-
     create(assets: Assets): Object3D {
         const ret = assets.objects.getCube(assets.materials.glas);
         ret.castShadow = false;
-        ret.receiveShadow = false;
         return ret;
     }
 }
@@ -345,76 +326,11 @@ export class ObjectTypeGrass extends ObjectType<any> {
     isObstacle(): boolean {return false;}
 }
 
-export abstract class ObjectTypeFlower extends ObjectTypePlant {
-
-    constructor(id: string) {super(id);}
-
-    get diggingTime(): number {return .3;}
-
-    get growSpeed(): number {return 1 / Constants.daysInSeconds;}
-
-    isObstacle(): boolean {return false;}
-}
-
-export class ObjectTypeFlowerWhite extends ObjectTypeFlower {
-
-    constructor(id: string) {super(id);}
-
-    protected createPlant(assets: Assets): Object3D {return assets.objects.flowerWhite;}
-}
-
-export class ObjectTypeFlowerRed extends ObjectTypeFlower {
-
-    constructor(id: string) {super(id);}
-
-    protected createPlant(assets: Assets): Object3D {return assets.objects.flowerRed;}
-}
-
-export class ObjectTypeFlowerBlue extends ObjectTypeFlower {
-
-    constructor(id: string) {super(id);}
-
-    protected createPlant(assets: Assets): Object3D {return assets.objects.flowerBlue;}
-}
-
-export class ObjectTypeFlowerYellow extends ObjectTypeFlower {
-
-    constructor(id: string) {super(id);}
-
-    protected createPlant(assets: Assets): Object3D {return assets.objects.flowerYellow;}
-}
-
-export class ObjectTypeFlowerPink extends ObjectTypeFlower {
-
-    constructor(id: string) {super(id);}
-
-    protected createPlant(assets: Assets): Object3D {return assets.objects.flowerPink;}
-}
-
-export class ObjectTypeMushroom extends ObjectTypePlant {
-
-    constructor(id: string) {super(id);}
-
-    get diggingTime(): number {return .3;}
-
-    get growSpeed(): number {return 2 / Constants.daysInSeconds;}
-
-    get nutritiveValue(): number {return 0.2;}
-
-    canBuild(): boolean {return false;}
-
-    isObstacle(): boolean {return false;}
-
-    protected createPlant(assets: Assets): Object3D {return assets.objects.mushroom;}
-}
-
 export class ObjectTypeStairsStone extends ObjectType<any> {
 
     constructor(id: string) {super(id);}
 
     get diggingTime(): number {return .4 * 2;}
-
-    coversFloor(): boolean {return false;}
 
     create(assets: Assets): Object3D {return assets.objects.stairsStone;}
 }
@@ -425,9 +341,32 @@ export class ObjectTypeStairsWood extends ObjectType<any> {
 
     get diggingTime(): number {return .4 * 2;}
 
-    coversFloor(): boolean {return false;}
-
     create(assets: Assets): Object3D {return assets.objects.stairsWood;}
+}
+
+export class ObjectTypeStickWood extends ObjectType<any> {
+
+    constructor(id: string) {super(id);}
+
+    get diggingTime(): number {return .4 * 2;}
+
+    create(assets: Assets): Object3D {return assets.objects.stickWood;}
+}
+
+export class ObjectTypeStonemill extends ObjectType<any> {
+
+    constructor(id: string) {super(id);}
+
+    get diggingTime(): number {return .4 * 2;}
+
+    get size(): Vector3 {return new Vector3(3, 2, 1);}
+
+    create(assets: Assets): Object3D {return assets.objects.stonemill;}
+
+    use(object: StaticObject<any>, control: ObjectControl): boolean {
+        control.craft(FactoryType.STONE_MILL);
+        return true;
+    }
 }
 
 export class ObjectTypeWindow extends ObjectType<any> {
@@ -436,8 +375,22 @@ export class ObjectTypeWindow extends ObjectType<any> {
 
     get diggingTime(): number {return .4 * 2;}
 
-    coversFloor(): boolean {return false;}
-
     create(assets: Assets): Object3D {return assets.objects.window;}
+}
+
+export class ObjectTypeWorkbench extends ObjectType<any> {
+
+    constructor(id: string) {super(id);}
+
+    get diggingTime(): number {return .4 * 2;}
+
+    get size(): Vector3 {return new Vector3(3, 2, 2);}
+
+    create(assets: Assets): Object3D {return assets.objects.workbench;}
+
+    use(object: StaticObject<any>, control: ObjectControl): boolean {
+        control.craft(FactoryType.WORK_BENCH);
+        return true;
+    }
 }
 

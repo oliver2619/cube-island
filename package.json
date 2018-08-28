@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod --base-href /buddeln/",
+    "buildLocal": "ng build --prod --base-href /buddeln/",
     "buildPublic": "ng build --prod --base-href /cubeIslands/",
     "test": "ng test",
     "lint": "ng lint",

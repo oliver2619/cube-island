@@ -1,9 +1,6 @@
 import {CollectibleResources} from "./resourceSet";
 import {CollectibleTypes} from "./collectibleTypes";
-
-export enum FactoryType {
-    NONE, WORK_BENCH, STONE_MILL, FURNACE
-}
+import {FactoryType} from "./factoryType";
 
 export interface CraftGroup {
     id: string;
@@ -15,6 +12,8 @@ export class CraftGroups {
 
     private static _metal: CraftGroup = {id: 'metal', name: 'Metal'};
 
+    private static _plant: CraftGroup = {id: 'plant', name: 'Plant'};
+
     private static _stone: CraftGroup = {id: 'stone', name: 'Stone'};
 
     private static _tools: CraftGroup = {id: 'tools', name: 'Tools'};
@@ -24,6 +23,8 @@ export class CraftGroups {
     static get furniture(): CraftGroup {return CraftGroups._furniture;}
 
     static get metal(): CraftGroup {return CraftGroups._metal;}
+
+    static get plant(): CraftGroup {return CraftGroups._plant;}
 
     static get stone(): CraftGroup {return CraftGroups._stone;}
 
@@ -57,11 +58,22 @@ export class CraftRecipes {
 
     private static init(): void {
         CraftRecipes._recipes = [{
+            id: 'barSteel',
+            name: 'Steel bar',
+            sources: [
+                new CollectibleResources(CollectibleTypes.STEEL, 1)
+            ],
+            product: new CollectibleResources(CollectibleTypes.BAR_STEEL, 16),
+            factoryType: FactoryType.FURNACE_METAL,
+            group: CraftGroups.metal,
+            duration: 1
+        }, {
             id: 'chest',
             name: 'Chest',
             sources: [
                 new CollectibleResources(CollectibleTypes.WOOD_PLANK, 1)
-            ], product: new CollectibleResources(CollectibleTypes.CHEST, 1),
+            ],
+            product: new CollectibleResources(CollectibleTypes.CHEST, 1),
             factoryType: FactoryType.WORK_BENCH,
             group: CraftGroups.furniture
         }, {
@@ -72,48 +84,107 @@ export class CraftRecipes {
                 new CollectibleResources(CollectibleTypes.SAND, 1)
             ],
             product: new CollectibleResources(CollectibleTypes.CLAY, 2),
-            factoryType: FactoryType.STONE_MILL,
+            factoryType: FactoryType.NONE,
             group: CraftGroups.stone
         }, {
             id: 'clayBricks',
             name: 'Clay bricks',
             sources: [
                 new CollectibleResources(CollectibleTypes.CLAY, 1)
-            ], product: new CollectibleResources(CollectibleTypes.CLAY_BRICKS, 1),
-            factoryType: FactoryType.FURNACE,
-            group: CraftGroups.stone
+            ],
+            product: new CollectibleResources(CollectibleTypes.CLAY_BRICKS, 1),
+            factoryType: FactoryType.FURNACE_METAL,
+            group: CraftGroups.stone,
+            duration: 1
+        }, {
+            id: 'coal',
+            name: 'Coal',
+            sources: [
+                new CollectibleResources(CollectibleTypes.WOOD_PLANK, 4)
+            ],
+            product: new CollectibleResources(CollectibleTypes.COAL, 1),
+            factoryType: FactoryType.FURNACE_METAL,
+            group: CraftGroups.stone,
+            duration: 1
+        }, {
+            id: 'compost',
+            name: 'Compost',
+            sources: [
+                new CollectibleResources(CollectibleTypes.GRAS, 1)
+            ],
+            product: new CollectibleResources(CollectibleTypes.COMPOST, 1),
+            factoryType: FactoryType.NONE,
+            group: CraftGroups.plant
         }, {
             id: 'fenceWood',
             name: 'FenceWood',
             sources: [
-                new CollectibleResources(CollectibleTypes.WOOD_PLANK, 1)
-            ], product: new CollectibleResources(CollectibleTypes.FENCE_WOOD, 12),
-            factoryType: FactoryType.NONE,
+                new CollectibleResources(CollectibleTypes.STICK_WOOD, 3)
+            ],
+            product: new CollectibleResources(CollectibleTypes.FENCE_WOOD, 1),
+            factoryType: FactoryType.WORK_BENCH,
+            group: CraftGroups.furniture
+        }, {
+            id: 'furnace',
+            name: 'Furnace',
+            sources: [
+                new CollectibleResources(CollectibleTypes.ROCKS, 12)
+            ],
+            product: new CollectibleResources(CollectibleTypes.FURNACE, 1),
+            factoryType: FactoryType.STONE_MILL,
             group: CraftGroups.furniture
         }, {
             id: 'glas',
             name: 'Glas',
             sources: [
                 new CollectibleResources(CollectibleTypes.SAND, 1)
-            ], product: new CollectibleResources(CollectibleTypes.GLAS, 1),
-            factoryType: FactoryType.FURNACE,
-            group: CraftGroups.stone
+            ],
+            product: new CollectibleResources(CollectibleTypes.GLAS, 1),
+            factoryType: FactoryType.FURNACE_METAL,
+            group: CraftGroups.stone,
+            duration: 1
         }, {
             id: 'gravel',
-            name: 'Gravel from rocks',
+            name: 'Gravel',
             sources: [
                 new CollectibleResources(CollectibleTypes.ROCKS, 3)
-            ], product: new CollectibleResources(CollectibleTypes.GRAVEL, 4),
+            ],
+            product: new CollectibleResources(CollectibleTypes.GRAVEL, 4),
             factoryType: FactoryType.STONE_MILL,
             group: CraftGroups.stone
         }, {
             id: 'gravel2',
-            name: 'Gravel from bricks',
+            name: 'Gravel',
             sources: [
                 new CollectibleResources(CollectibleTypes.STONE_BRICKS, 3)
-            ], product: new CollectibleResources(CollectibleTypes.GRAVEL, 4),
+            ],
+            product: new CollectibleResources(CollectibleTypes.GRAVEL, 4),
             factoryType: FactoryType.STONE_MILL,
             group: CraftGroups.stone
+        }, {
+            id: 'mud',
+            name: 'Mud from wood',
+            sources: [
+                new CollectibleResources(CollectibleTypes.WOOD, 1)
+            ],
+            product: new CollectibleResources(CollectibleTypes.GRAS, 1),
+            factoryType: FactoryType.COMPOST,
+            group: CraftGroups.plant,
+            duration: 1
+        }, {
+            id: 'mud2',
+            name: 'Mud from flowers',
+            sources: [
+                new CollectibleResources(CollectibleTypes.FLOWER_WHITE, 2),
+                new CollectibleResources(CollectibleTypes.FLOWER_RED, 2),
+                new CollectibleResources(CollectibleTypes.FLOWER_BLUE, 2),
+                new CollectibleResources(CollectibleTypes.FLOWER_YELLOW, 2),
+                new CollectibleResources(CollectibleTypes.FLOWER_PINK, 2),
+            ],
+            product: new CollectibleResources(CollectibleTypes.GRAS, 1),
+            factoryType: FactoryType.COMPOST,
+            group: CraftGroups.plant,
+            duration: 1
         }, {
             id: 'sand',
             name: 'Sand from gravel',
@@ -140,7 +211,7 @@ export class CraftRecipes {
                 new CollectibleResources(CollectibleTypes.COAL, 1)
             ],
             product: new CollectibleResources(CollectibleTypes.STEEL, 1),
-            factoryType: FactoryType.FURNACE,
+            factoryType: FactoryType.FURNACE_METAL,
             group: CraftGroups.metal,
             duration: 1
         }, {
@@ -153,6 +224,15 @@ export class CraftRecipes {
             factoryType: FactoryType.STONE_MILL,
             group: CraftGroups.stone
         }, {
+            id: 'stonemill',
+            name: 'Stonemill',
+            sources: [
+                new CollectibleResources(CollectibleTypes.ROCKS, 6)
+            ],
+            product: new CollectibleResources(CollectibleTypes.STONEMILL, 1),
+            factoryType: FactoryType.NONE,
+            group: CraftGroups.stone
+        }, {
             id: 'stoneStairs',
             name: 'Stone stairs',
             sources: [
@@ -160,14 +240,15 @@ export class CraftRecipes {
             ],
             product: new CollectibleResources(CollectibleTypes.STAIRS_STONE, 1),
             factoryType: FactoryType.STONE_MILL,
-            group: CraftGroups.stone
+            group: CraftGroups.furniture
         }, {
             id: 'window',
             name: 'Window',
             sources: [
                 new CollectibleResources(CollectibleTypes.WOOD_PLANK, 1),
                 new CollectibleResources(CollectibleTypes.GLAS, 1)
-            ], product: new CollectibleResources(CollectibleTypes.WINDOW, 20),
+            ],
+            product: new CollectibleResources(CollectibleTypes.WINDOW, 20),
             factoryType: FactoryType.WORK_BENCH,
             group: CraftGroups.furniture
         }, {
@@ -175,7 +256,8 @@ export class CraftRecipes {
             name: 'Wooden door',
             sources: [
                 new CollectibleResources(CollectibleTypes.WOOD_PLANK, 4)
-            ], product: new CollectibleResources(CollectibleTypes.DOOR_WOOD, 1),
+            ],
+            product: new CollectibleResources(CollectibleTypes.DOOR_WOOD, 1),
             factoryType: FactoryType.WORK_BENCH,
             group: CraftGroups.furniture
         }, {
@@ -183,17 +265,37 @@ export class CraftRecipes {
             name: 'Wooden stairs',
             sources: [
                 new CollectibleResources(CollectibleTypes.WOOD_PLANK, 1)
-            ], product: new CollectibleResources(CollectibleTypes.STAIRS_WOOD, 1),
+            ],
+            product: new CollectibleResources(CollectibleTypes.STAIRS_WOOD, 1),
             factoryType: FactoryType.WORK_BENCH,
             group: CraftGroups.furniture
+        }, {
+            id: 'woodenSticks',
+            name: 'Wooden sticks',
+            sources: [
+                new CollectibleResources(CollectibleTypes.WOOD_PLANK, 1)
+            ],
+            product: new CollectibleResources(CollectibleTypes.STICK_WOOD, 30),
+            factoryType: FactoryType.WORK_BENCH,
+            group: CraftGroups.wood
         }, {
             id: 'woodPlank',
             name: 'Wood plank',
             sources: [
                 new CollectibleResources(CollectibleTypes.WOOD, 1)
-            ], product: new CollectibleResources(CollectibleTypes.WOOD_PLANK, 4),
-            factoryType: FactoryType.WORK_BENCH,
+            ],
+            product: new CollectibleResources(CollectibleTypes.WOOD_PLANK, 4),
+            factoryType: FactoryType.NONE,
             group: CraftGroups.wood
+        }, {
+            id: 'workbench',
+            name: 'Workbench',
+            sources: [
+                new CollectibleResources(CollectibleTypes.WOOD_PLANK, 2)
+            ],
+            product: new CollectibleResources(CollectibleTypes.WORKBENCH, 1),
+            factoryType: FactoryType.NONE,
+            group: CraftGroups.furniture
         }];
     }
 }

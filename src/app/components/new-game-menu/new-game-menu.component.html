@@ -7,7 +7,7 @@
         <div class="inputGroup" title="The clima zone affects the vegetation and fauna and the cycle of day and night. (Not implemented, yet)">
             <label for="climate" accesskey="c"><em>C</em>limate</label>
             <select id="climate" formControlName="climate">
-                <option *ngFor="let l of climates" value="{{l.id}}" disabled="{{l.id !== 'temperate'}}">{{l.name}}</option>
+                <option *ngFor="let l of climates" value="{{l.id}}">{{l.name}}</option>
             </select>
         </div>
         <div class="inputGroup" title="Size of map">

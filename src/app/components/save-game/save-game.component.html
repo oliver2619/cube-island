@@ -1,4 +1,7 @@
 <app-dialog title="Save game">
+    <ul class="selectable" *ngIf="hasSavedGames()" title="List of all saved games.">
+        <li *ngFor="let g of savedGames" [ngClass]="{selected: selected === g}" (click)="select(g)">{{g}}</li>
+    </ul>
     <form [formGroup]="formGroup">
         <div class="inputGroup" title="Name of the game to be saved.">
             <input #name type="text" formControlName="name" placeholder="Please enter a name">

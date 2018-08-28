@@ -6,6 +6,7 @@ import {NavigationService} from '../../services/navigation.service';
 interface ClimaZone {
     id: string;
     name: string;
+    latitude: number;
 }
 
 interface MapSize {
@@ -37,11 +38,11 @@ export class NewGameMenuComponent implements OnInit {
 
     get climates(): ClimaZone[] {
         return [
-            {id: 'subpolar', name: 'Subpolar'},
-            {id: 'temperate', name: 'Temperate'},
-            {id: 'mediterranean', name: 'Mediterranean'},
-            {id: 'subtropical', name: 'Subtropical'},
-            {id: 'tropics', name: 'Tropics'}
+            {id: 'subpolar', name: 'Subpolar', latitude: 75},
+            {id: 'temperate', name: 'Temperate', latitude: 50},
+            {id: 'mediterranean', name: 'Mediterranean', latitude: 35},
+            {id: 'subtropical', name: 'Subtropical', latitude: 25},
+            {id: 'tropics', name: 'Tropics', latitude: 5}
         ];
     }
 
@@ -64,11 +65,14 @@ export class NewGameMenuComponent implements OnInit {
     }
 
     onStart(): void {
-        const name: string = this.formGroup.get('name').value;
+        const climateId = this.formGroup.get('climate').value;
+        const climaZone = this.climates.find(c => c.id === climateId);
         this.gameService.newGame({
             numberOfClusters: this.formGroup.get('mapSize').value,
             monsters: this.formGroup.get('monsters').value,
-            infiniteLife: this.formGroup.get('infiniteLife').value
+            infiniteLife: this.formGroup.get('infiniteLife').value,
+            latitude: climaZone.latitude * Math.PI / 180,
+            name: this.formGroup.get('name').value
         });
         this.navigationService.showGame();
     }

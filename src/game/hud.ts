@@ -372,6 +372,8 @@ export class HUD {
         renderer.autoClear = true;
         renderer.autoClearColor = false;
         renderer.autoClearDepth = true;
+        renderer.shadowMap.enabled = false;
+
         renderer.render(this.scene, this.camera);
     }
 

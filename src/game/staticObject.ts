@@ -5,7 +5,6 @@ import {Assets} from "./assets";
 import {Constants} from "./constants";
 import {Vector3StoreData} from "./commonStoreData";
 import {Simulation} from "./simulation";
-import {CubeType} from "./cubeTypes";
 
 export class StaticObjectStoreData<U>{
     userData: U;

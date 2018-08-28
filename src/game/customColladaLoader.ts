@@ -42,7 +42,7 @@ export class CustomColladaLoader {
         ret.copy(src, false);
         this.modifyMesh(ret);
         this.copyChildren(src, ret);
-        ret.receiveShadow = this._shadow;
+        ret.receiveShadow = true;
         ret.castShadow = this._shadow;
         if(this._meshVisitor !== undefined){
             this._meshVisitor(ret);

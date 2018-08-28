@@ -175,12 +175,9 @@ export class WorldInitializer {
                         } else {
                             world.addCube(CollectibleTypes.GRAS, new Vector3(x, y, z));
                             if (z + 1 >= height) {
-                                if (Math.random() < .01) {
-                                    for (let th = 1; th < 10; ++th)
-                                        world.addCube(CollectibleTypes.WOOD, new Vector3(x, y, z + th));
-                                } else if (Math.random() < .1) {
+                                if (Math.random() < .8) {
                                     const pl = world.addStaticObject(new Vector3(x, y, z + 1), 0, CollectibleTypes.randomPlant());
-                                    pl.userData.grown = 1;
+                                    pl.userData.grown = Math.random() < .1 ? Math.random() : 1;
                                 }
                             }
 
@@ -218,6 +215,9 @@ export class WorldInitializer {
         const size = world.size;
         let x = Math.floor(size * .5);
         let y = size - 1;
+        
+        y = Math.floor(size * .5);
+        
         while (y > 0 && world.getHeight(x, y) <= Constants.waterHeight) {
             --y;
         }

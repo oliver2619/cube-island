@@ -10,6 +10,8 @@ export abstract class CubeType extends CollectibleType {
         super(id);
     }
 
+    get healingValue(): number {return 0;}
+    
     get nutritiveValue(): number {return 0;}
 
     get size(): Vector3 {return new Vector3(1, 1, 1);}

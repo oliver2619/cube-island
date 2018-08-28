@@ -213,12 +213,14 @@ export class CubeCluster {
             });
         });
         let mesh: Mesh;
+        let material: Material;
         for (let g in this.geometries) {
             this.geometries[g].computeBoundingSphere();
             this.geometries[g].computeBoundingBox();
-            mesh = new Mesh(this.geometries[g], materialsByName[g]);
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
+            material = materialsByName[g];
+            mesh = new Mesh(this.geometries[g], material);
+            mesh.castShadow = !material.transparent;
+            mesh.receiveShadow = mesh.castShadow;
             this.meshes[g] = mesh;
             this.rootObject.add(mesh);
         }

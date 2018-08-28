@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input} from '@angular/core';
-import {WebGLRenderer, PCFSoftShadowMap} from 'three';
+import {WebGLRenderer, PCFShadowMap} from 'three';
 
 @Component({
     selector: 'app-canvas',
@@ -31,7 +31,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
             antialias: true
         });
         this._renderer.shadowMap.enabled = true;
-        this._renderer.shadowMap.type = PCFSoftShadowMap;
+        this._renderer.shadowMap.type = PCFShadowMap;
         this.canvas.focus();
     }
 }
