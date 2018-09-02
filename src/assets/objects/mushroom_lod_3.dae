@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <asset>
+    <contributor>
+      <author>Blender User</author>
+      <authoring_tool>Blender 2.79.0 commit date:2018-03-22, commit time:14:10, hash:f4dc9f9d68b</authoring_tool>
+    </contributor>
+    <created>2018-09-01T21:43:49</created>
+    <modified>2018-09-01T21:43:49</modified>
+    <unit name="meter" meter="1"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_images/>
+  <library_effects>
+    <effect id="brown-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <phong>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0 0 0 1</color>
+            </ambient>
+            <diffuse>
+              <color sid="diffuse">0.1375835 0.05992302 0.02300676 1</color>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.08940377 0.03843435 0.01495321 1</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">7</float>
+            </shininess>
+            <index_of_refraction>
+              <float sid="index_of_refraction">1</float>
+            </index_of_refraction>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="beige-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <phong>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0 0 0 1</color>
+            </ambient>
+            <diffuse>
+              <color sid="diffuse">0.4575297 0.3312808 0.1930492 1</color>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.1093485 0.07964985 0.04662719 1</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">10</float>
+            </shininess>
+            <index_of_refraction>
+              <float sid="index_of_refraction">1</float>
+            </index_of_refraction>
+          </phong>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_materials>
+    <material id="brown-material" name="brown">
+      <instance_effect url="#brown-effect"/>
+    </material>
+    <material id="beige-material" name="beige">
+      <instance_effect url="#beige-effect"/>
+    </material>
+  </library_materials>
+  <library_geometries>
+    <geometry id="Icosphere-mesh" name="Icosphere">
+      <mesh>
+        <source id="Icosphere-mesh-positions">
+          <float_array id="Icosphere-mesh-positions-array" count="51">-0.002404212 0.08511692 0.1043003 -0.005574345 0.004293918 0.1810315 0.03741258 -0.06786966 0.1085923 0.07044982 0.03215914 0.1082263 0.0680105 -0.06266307 0.142822 -0.03362828 -0.08993023 0.1243329 -0.07522267 0.06570285 0.1358892 -0.08803808 -0.02814972 0.1453476 0.06790059 0.06242817 0.1517935 -0.08391767 0.001499772 0.1015032 -0.04864025 0.008160412 0.1170323 -0.01572835 -0.04000675 0.1251106 0.04019522 0.002805471 0.1238476 -0.006165385 0.04606676 0.1200679 -0.01030427 -0.03293466 4.34604e-4 0.02757155 0.01935654 6.31701e-4 -0.01567608 0.02668058 7.82175e-4</float_array>
+          <technique_common>
+            <accessor source="#Icosphere-mesh-positions-array" count="17" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Icosphere-mesh-normals">
+          <float_array id="Icosphere-mesh-normals-array" count="120">0.7408207 -0.246962 -0.6246554 -0.4537464 0.4677048 -0.7585293 0.5383299 0.7065262 -0.4593709 -0.9908277 0.1351204 -0.001742601 -0.4416166 0.1494585 0.8846677 -0.08181399 0.5284062 0.8450405 -0.192036 -0.4633885 0.8650972 -0.1041355 -0.4898434 0.8655688 -0.09691828 -0.4918215 0.8652852 -0.01912164 -0.511312 0.8591824 0.4127938 -0.06479597 0.9085168 -0.03191167 0.882668 0.4689126 -0.7473558 -0.5156826 -0.4189639 0.2747654 -0.9562807 -0.1001558 0.9981424 -0.00348556 0.06082564 0.4089781 -0.3827689 -0.828387 0.4212017 -0.1752638 -0.8898718 0.4218592 -0.149348 -0.8942764 -0.1164585 -0.3004345 -0.9466661 -0.5910844 0.1923553 -0.7833381 -0.2897008 0.2128269 -0.9331551 -0.4831846 0.2028611 -0.8516924 0.4883655 0.8655315 0.1111504 -0.2003006 -0.3129391 -0.928412 -0.20292 -0.3341879 -0.9204033 -0.2047493 -0.3494556 -0.9143077 -0.1857157 0.2143005 -0.9589499 -0.9550266 -0.08439868 -0.2842553 0.6807197 0.7319862 0.02858358 -0.6615394 0.7467646 -0.06861817 0.163937 0.971543 -0.1709647 -0.002530515 0.005602061 -0.9999811 0.3833616 0.1081099 -0.9172493 0.3957467 -0.3763601 -0.8376979 -0.1978625 -0.2937431 -0.935182 -0.8184074 -0.5706043 -0.06797224 0.6729008 -0.7371408 -0.06187039 0.7465571 -0.6551758 -0.1157469 0.7997659 -0.5786884 -0.1596701 0.6075022 -0.7941 -0.01861459</float_array>
+          <technique_common>
+            <accessor source="#Icosphere-mesh-normals-array" count="40" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="Icosphere-mesh-vertices">
+          <input semantic="POSITION" source="#Icosphere-mesh-positions"/>
+        </vertices>
+        <triangles material="brown-material" count="25">
+          <input semantic="VERTEX" source="#Icosphere-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Icosphere-mesh-normals" offset="1"/>
+          <p>2 0 3 0 4 0 0 1 9 1 6 1 3 2 0 2 8 2 9 3 7 3 6 3 6 4 7 4 1 4 8 5 6 5 1 5 7 6 5 7 1 8 5 7 4 9 1 8 4 10 8 10 1 10 0 11 6 11 8 11 7 12 9 12 5 12 5 13 2 13 4 13 4 14 3 14 8 14 0 15 10 16 9 17 5 18 9 18 2 18 3 19 2 20 12 21 11 22 2 22 9 22 3 23 13 24 0 25 10 27 16 27 14 27 12 28 15 28 13 28 13 29 16 29 10 29 13 30 15 30 16 30 11 35 10 35 14 35 12 36 14 37 15 38 12 36 11 39 14 37</p>
+        </triangles>
+        <triangles material="beige-material" count="5">
+          <input semantic="VERTEX" source="#Icosphere-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Icosphere-mesh-normals" offset="1"/>
+          <p>11 26 12 21 2 20 14 31 16 31 15 31 11 32 9 17 10 16 10 16 0 15 13 33 13 24 3 23 12 34</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_controllers/>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="mushroom" name="mushroom" type="NODE">
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+        <instance_geometry url="#Icosphere-mesh" name="mushroom">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="brown-material" target="#brown-material"/>
+              <instance_material symbol="beige-material" target="#beige-material"/>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>

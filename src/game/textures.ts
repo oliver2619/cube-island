@@ -1,4 +1,4 @@
-import {Texture, WebGLRenderer, TextureLoader, ClampToEdgeWrapping, RepeatWrapping, CubeCamera} from "three";
+import {Texture, WebGLRenderer, TextureLoader, ClampToEdgeWrapping, RepeatWrapping, CubeCamera, LinearFilter} from "three";
 import {Constants} from "./constants";
 import {ResourceLoadingProgress} from "./resourceLoadingProgress";
 
@@ -67,6 +67,7 @@ export class Textures {
     private _bark: Texture;
     private _bricks: Texture;
     private _clay: Texture;
+    private _clouds: Texture;
     private _coal: Texture;
     private _compost: Texture;
     private _concrete: Texture;
@@ -78,6 +79,7 @@ export class Textures {
     private _inventorySlot: Texture;
     private _ironOre: Texture;
     private _lava: Texture;
+    private _leaves: Texture;
     private _lightfx: Texture;
     private _moon: Texture;
     private _mud: Texture;
@@ -86,7 +88,8 @@ export class Textures {
     private _snow: Texture;
     private _steel: Texture;
     private _stoneBricks: Texture;
-    private _skyCamera: CubeCamera = new CubeCamera(.1, 10, 2048);
+    private _stoneBricksBump: Texture;
+    private _skyCamera: CubeCamera = new CubeCamera(.01, 10, 2048);
     private _sun: Texture;
     private _water: Texture;
     private _woodPlank: Texture;
@@ -97,6 +100,8 @@ export class Textures {
     get bricks(): Texture {return this._bricks;}
 
     get clay(): Texture {return this._clay;}
+
+    get clouds(): Texture {return this._clouds;}
 
     get coal(): Texture {return this._coal;}
 
@@ -120,6 +125,8 @@ export class Textures {
 
     get lava(): Texture {return this._lava;}
 
+    get leaves(): Texture {return this._leaves;}
+
     get lightfx(): Texture {return this._lightfx;}
 
     get moon(): Texture {return this._moon;}
@@ -139,6 +146,8 @@ export class Textures {
     get steel(): Texture {return this._steel;}
 
     get stoneBricks(): Texture {return this._stoneBricks;}
+
+    get stoneBricksBump(): Texture {return this._stoneBricksBump;}
 
     get sun(): Texture {return this._sun;}
 
@@ -160,8 +169,9 @@ export class Textures {
         this._bark.repeat.set(1 / 0.35, 1 / 0.97);
         this._bark.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
-        this._bricks = this.load('bricks', 'bricks.png', 1.06, renderer, progress);
-        this._clay = this.load('clay', 'clay.png', 1.41, renderer, progress);
+        this._bricks = this.load('bricks', 'bricks.png', Constants.cubeSize * 3, renderer, progress);
+        this._clay = this.load('clay', 'clay.png', 1.11, renderer, progress);
+        this._clouds = this.load('clouds', 'clouds.png', 0.1, renderer, progress);
         this._coal = this.load('coal', 'coal.jpg', 0.86, renderer, progress);
         this._compost = this.load('compost', 'compost.png', 0.42, renderer, progress);
         this._concrete = this.load('concrete', 'concrete.png', 0.72, renderer, progress);
@@ -173,6 +183,7 @@ export class Textures {
         this._inventorySlot = this.loadClamped('inventorySlot.png', renderer, progress);
         this._ironOre = this.load('ironOre', 'ironOre.jpg', 1.44, renderer, progress);
         this._lava = this.load('lava', 'lava.png', 1.23, renderer, progress);
+        this._leaves = this.load('leaves', 'leaves.png', 1, renderer, progress);
         this._lightfx = this.loadClamped('lightfx.png', renderer, progress);
         
         loader = new TextureLoader();
@@ -188,7 +199,8 @@ export class Textures {
         this._sand = this.load('sand', 'sand.png', 1.13, renderer, progress);
         this._snow = this.load('snow', 'snow.png', 2.64, renderer, progress);
         this._steel = this.load('steel', 'steel.jpg', 1.39, renderer, progress);
-        this._stoneBricks = this.load('stoneBricks', 'stoneBricks.png', 0.67, renderer, progress);
+        this._stoneBricks = this.load('stoneBricks', 'stoneBricks.png', Constants.cubeSize * 2, renderer, progress);
+        this._stoneBricksBump = this.load('stoneBricksBump', 'stoneBricks_bump.png', Constants.cubeSize * 2, renderer, progress);
         this._sun = this.loadClamped('sun.png', renderer, progress);
         this._water = this.load('water', 'water.jpg', 45, renderer, progress);
         this._woodPlank = this.load('woodPlank', 'woodPlank.png', 0.37, renderer, progress);
@@ -204,6 +216,7 @@ export class Textures {
         ret.wrapT = RepeatWrapping;
         ret.repeat.set(1 / physicalSize, 1 / physicalSize);
         ret.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        ret.magFilter = LinearFilter;
         return ret;
     }
 

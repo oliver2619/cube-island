@@ -1,5 +1,5 @@
 import {Assets} from "./assets";
-import {Material, Texture, Object3D, Vector3} from "three";
+import {Texture, Object3D, Vector3, MeshMaterialType} from "three";
 import {CollectibleType} from "./collectible";
 
 export abstract class CubeType extends CollectibleType {
@@ -28,13 +28,13 @@ export abstract class CubeType extends CollectibleType {
         return ret;
     }
 
-    abstract getMaterial(assets: Assets): Material;
+    abstract getMaterial(assets: Assets): MeshMaterialType;
 
-    getMaterialTop(assets: Assets): Material {
+    getMaterialTop(assets: Assets): MeshMaterialType {
         return this.getMaterial(assets);
     }
 
-    getMaterialBottom(assets: Assets): Material {
+    getMaterialBottom(assets: Assets): MeshMaterialType {
         return this.getMaterial(assets);
     }
 
@@ -61,7 +61,7 @@ export class CubeTypeClay extends CubeType {
         return .4;
     }
 
-    getMaterial(assets: Assets): Material {
+    getMaterial(assets: Assets): MeshMaterialType {
         return assets.materials.clay;
     }
 }
@@ -76,15 +76,15 @@ export class CubeTypeClayBricks extends CubeType {
         return .4;
     }
 
-    getMaterial(assets: Assets): Material {
+    getMaterial(assets: Assets): MeshMaterialType {
         return assets.materials.bricks;
     }
 
-    getMaterialBottom(assets: Assets): Material {
+    getMaterialBottom(assets: Assets): MeshMaterialType {
         return assets.materials.concrete;
     }
 
-    getMaterialTop(assets: Assets): Material {
+    getMaterialTop(assets: Assets): MeshMaterialType {
         return assets.materials.concrete;
     }
 
@@ -101,7 +101,7 @@ export class CubeTypeCoal extends CubeType {
         return .4;
     }
 
-    getMaterial(assets: Assets): Material {
+    getMaterial(assets: Assets): MeshMaterialType {
         return assets.materials.coal;
     }
 }
@@ -116,11 +116,11 @@ export class CubeTypeGras extends CubeType {
         return .4;
     }
 
-    getMaterial(assets: Assets): Material {
+    getMaterial(assets: Assets): MeshMaterialType {
         return assets.materials.mud;
     }
 
-    getMaterialTop(assets: Assets): Material {
+    getMaterialTop(assets: Assets): MeshMaterialType {
         return assets.materials.gras;
     }
 
@@ -139,7 +139,7 @@ export class CubeTypeGravel extends CubeType {
         return .4;
     }
 
-    getMaterial(assets: Assets): Material {
+    getMaterial(assets: Assets): MeshMaterialType {
         return assets.materials.gravel;
     }
 }
@@ -154,7 +154,7 @@ export class CubeTypeIce extends CubeType {
         return .4;
     }
 
-    getMaterial(assets: Assets): Material {
+    getMaterial(assets: Assets): MeshMaterialType {
         return assets.materials.snow;
     }
 }
@@ -169,7 +169,7 @@ export class CubeTypeIronOre extends CubeType {
         return .4;
     }
 
-    getMaterial(assets: Assets): Material {
+    getMaterial(assets: Assets): MeshMaterialType {
         return assets.materials.ironOre;
     }
 }
@@ -184,7 +184,7 @@ export class CubeTypeLava extends CubeType {
         return 10000;
     }
 
-    getMaterial(assets: Assets): Material {
+    getMaterial(assets: Assets): MeshMaterialType {
         return assets.materials.lava;
     }
 
@@ -203,7 +203,7 @@ export class CubeTypeMud extends CubeType {
         return .4;
     }
 
-    getMaterial(assets: Assets): Material {
+    getMaterial(assets: Assets): MeshMaterialType {
         return assets.materials.mud;
     }
 }
@@ -218,7 +218,7 @@ export class CubeTypeRocks extends CubeType {
         return .4;
     }
 
-    getMaterial(assets: Assets): Material {
+    getMaterial(assets: Assets): MeshMaterialType {
         return assets.materials.rocks;
     }
 }
@@ -233,7 +233,7 @@ export class CubeTypeSand extends CubeType {
         return .4;
     }
 
-    getMaterial(assets: Assets): Material {
+    getMaterial(assets: Assets): MeshMaterialType {
         return assets.materials.sand;
     }
 }
@@ -248,7 +248,7 @@ export class CubeTypeSteel extends CubeType {
         return .4;
     }
 
-    getMaterial(assets: Assets): Material {
+    getMaterial(assets: Assets): MeshMaterialType {
         return assets.materials.steel;
     }
 }
@@ -263,7 +263,7 @@ export class CubeTypeStoneBricks extends CubeType {
         return .4;
     }
 
-    getMaterial(assets: Assets): Material {
+    getMaterial(assets: Assets): MeshMaterialType {
         return assets.materials.stoneBricks;
     }
 
@@ -282,7 +282,7 @@ export class CubeTypeWater extends CubeType {
 
     canWalkThrough(): boolean {return true;}
 
-    getMaterial(assets: Assets): Material {
+    getMaterial(assets: Assets): MeshMaterialType {
         return assets.materials.water;
     }
 
@@ -303,15 +303,15 @@ export class CubeTypeWood extends CubeType {
         return .4;
     }
 
-    getMaterial(assets: Assets): Material {
+    getMaterial(assets: Assets): MeshMaterialType {
         return assets.materials.barkCube;
     }
 
-    getMaterialTop(assets: Assets): Material {
+    getMaterialTop(assets: Assets): MeshMaterialType {
         return assets.materials.woodTreeCutCube;
     }
 
-    getMaterialBottom(assets: Assets): Material {
+    getMaterialBottom(assets: Assets): MeshMaterialType {
         return assets.materials.woodTreeCutCube;
     }
 
@@ -328,7 +328,7 @@ export class CubeTypeWoodPlank extends CubeType {
         return .4;
     }
 
-    getMaterial(assets: Assets): Material {
+    getMaterial(assets: Assets): MeshMaterialType {
         return assets.materials.woodPlank;
     }
 

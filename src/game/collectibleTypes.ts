@@ -1,5 +1,5 @@
 import {CubeTypes} from "./cubeTypes";
-import {ObjectTypeChest, ObjectTypeDoorWood, ObjectTypeGlas, ObjectTypeGrass, ObjectTypeFenceWood, ObjectTypeWindow, ObjectTypeStairsWood, ObjectTypeStairsStone, ObjectTypeWorkbench, ObjectTypeStonemill, ObjectTypeStickWood, ObjectTypeFurnace, ObjectTypeCompost, ObjectTypeBarSteel} from "./objects";
+import {ObjectTypeChest, ObjectTypeDoorWood, ObjectTypeGlas, ObjectTypeGrass, ObjectTypeFenceWood, ObjectTypeWindow, ObjectTypeStairsWood, ObjectTypeStairsStone, ObjectTypeWorkbench, ObjectTypeStonemill, ObjectTypeStickWood, ObjectTypeFurnace, ObjectTypeCompost, ObjectTypeBarSteel, ObjectTypeBucketMetalEmpty, ObjectTypeBucketWoodEmpty, ObjectTypeAnvil} from "./objects";
 import {ObjectTypeFlowerWhite, ObjectTypeFlowerRed, ObjectTypeFlowerBlue, ObjectTypeFlowerYellow, ObjectTypeFlowerPink, ObjectTypeMushroom, ObjectTypeTree, ObjectTypeFlower, ObjectTypePlant} from "./plants";
 
 export class CollectibleTypes {
@@ -20,7 +20,10 @@ export class CollectibleTypes {
     static WOOD = CubeTypes.WOOD;
     static WOOD_PLANK = CubeTypes.WOOD_PLANK;
 
+    static ANVIL = new ObjectTypeAnvil('ANVIL');
     static BAR_STEEL = new ObjectTypeBarSteel('BAR_STEEL');
+    static BUCKET_METAL_EMPTY = new ObjectTypeBucketMetalEmpty('BUCKET_METAL_EMPTY');
+    static BUCKET_WOOD_EMPTY = new ObjectTypeBucketWoodEmpty('BUCKET_WOOD_EMPTY');
     static CHEST = new ObjectTypeChest('CHEST');
     static COMPOST = new ObjectTypeCompost('COMPOST');
     static DOOR_WOOD = new ObjectTypeDoorWood('DOOR_WOOD');

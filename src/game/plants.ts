@@ -22,6 +22,8 @@ export abstract class ObjectTypePlant extends ObjectType<PlantImp>{
 
     canExistOn(cubeType: CubeType): boolean {return cubeType === CubeTypes.GRAS || cubeType === CubeTypes.MUD;}
 
+    canStack(): boolean {return false;}
+
     create(assets: Assets): Object3D {
         const ret = this.createPlant(assets);
         ret.rotation.z = Math.random() * 2 * Math.PI;
@@ -84,6 +86,11 @@ export abstract class ObjectTypeFlower extends ObjectTypePlant {
     }
 
     isObstacle(): boolean {return false;}
+
+    postCreate(object: StaticObject<any>): void {
+        object.object3D.position.x += (Math.random() * .8 - .4) * Constants.cubeSize;
+        object.object3D.position.y += (Math.random() * .8 - .4) * Constants.cubeSize;
+    }
 }
 
 export class ObjectTypeFlowerWhite extends ObjectTypeFlower {
@@ -128,7 +135,7 @@ export class ObjectTypeMushroom extends ObjectTypePlant {
     get diggingTime(): number {return .3;}
 
     get healingValue(): number {return 0;}
-    
+
     get growSpeed(): number {return 2 / Constants.daysInSeconds;}
 
     get nutritiveValue(): number {return 0.2;}
@@ -136,6 +143,11 @@ export class ObjectTypeMushroom extends ObjectTypePlant {
     canBuild(): boolean {return false;}
 
     isObstacle(): boolean {return false;}
+
+    postCreate(object: StaticObject<any>): void {
+        object.object3D.position.x += (Math.random() * .8 - .4) * Constants.cubeSize;
+        object.object3D.position.y += (Math.random() * .8 - .4) * Constants.cubeSize;
+    }
 
     protected createPlant(assets: Assets): Object3D {return assets.objects.mushroom;}
 }

@@ -453,7 +453,7 @@ export class HUD {
             this._emoji.startAnimation(true);
             return;
         }
-        if (this._health.amount < .67 || this._awake.amount < Constants.sleepThreshold || this._feed.amount < .25) {
+        if (this._health.amount < .67 || this._awake.amount < Constants.sleepThreshold * .5 || this._feed.amount < .25) {
             this._emoji.texture = this.assets.iconTextures.emojiSad;
             this._emoji.startAnimation(false);
             return;

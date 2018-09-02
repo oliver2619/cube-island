@@ -90,7 +90,7 @@ export class Person {
             if (this._health > 1)
                 this._health = 1;
         }
-        this.awake -= timeout / (.7 * Constants.daysInSeconds);
+        this.awake -= timeout / (.75 * Constants.daysInSeconds);
         if (this.awake < 0) {
             this._health -= 3 * timeout / Constants.daysInSeconds;
             this.awake = 0;

@@ -28,6 +28,8 @@ export abstract class CollectibleType {
 
     canEat(): boolean {return this.nutritiveValue > 0;}
 
+    canStack(): boolean {return true;}
+    
     abstract createForCursor(assets: Assets): Object3D;
 
     abstract createForHud(assets: Assets): Object3D;

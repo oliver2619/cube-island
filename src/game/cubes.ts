@@ -1,4 +1,4 @@
-import {Scene, Mesh, Geometry, Vector3, Face3, Vector2, Color, Material, Group} from "three";
+import {Scene, Mesh, Geometry, Vector3, Face3, Vector2, Color, Group, MeshMaterialType} from "three";
 import {Constants} from "./constants";
 import {Assets} from "./assets";
 import {CubeType} from "./cubeTypes";
@@ -103,7 +103,7 @@ export class CubeCluster {
             }
         }
     }
-
+    
     deinit(scene: Scene): void {
         for (let geometry in this.geometries) {
             this.geometries[geometry].dispose();
@@ -202,7 +202,7 @@ export class CubeCluster {
 
     init(scene: Scene, assets: Assets): void {
         this.deinit(scene);
-        const materialsByName: {[key: string]: Material} = {};
+        const materialsByName: {[key: string]: MeshMaterialType} = {};
         this.cubes.forEach((c1, x) => {
             c1.forEach((c2, y) => {
                 c2.forEach((cube, z) => {
@@ -213,7 +213,7 @@ export class CubeCluster {
             });
         });
         let mesh: Mesh;
-        let material: Material;
+        let material: MeshMaterialType;
         for (let g in this.geometries) {
             this.geometries[g].computeBoundingSphere();
             this.geometries[g].computeBoundingBox();
@@ -361,7 +361,7 @@ export class CubeCluster {
         ]));
     }
 
-    private addFaces(cube: Cube, x: number, y: number, z: number, assets: Assets, materialsByName: {[key: string]: Material}): void {
+    private addFaces(cube: Cube, x: number, y: number, z: number, assets: Assets, materialsByName: {[key: string]: MeshMaterialType}): void {
         let geometry: Geometry;
         let nc: Cube;
         let no: StaticObject<any>;
@@ -400,7 +400,7 @@ export class CubeCluster {
         }
     }
 
-    private getOrCreateGeometry(material: Material, materialsByName: {[key: string]: Material}): Geometry {
+    private getOrCreateGeometry(material: MeshMaterialType, materialsByName: {[key: string]: MeshMaterialType}): Geometry {
         const name = material.name;
         let geometry: Geometry = this.geometries[name];
         if (geometry === undefined) {

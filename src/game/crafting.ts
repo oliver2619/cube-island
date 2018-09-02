@@ -58,6 +58,16 @@ export class CraftRecipes {
 
     private static init(): void {
         CraftRecipes._recipes = [{
+            id: 'anvil',
+            name: 'Anvil',
+            sources: [
+                new CollectibleResources(CollectibleTypes.BAR_STEEL, 4)
+            ],
+            product: new CollectibleResources(CollectibleTypes.ANVIL, 1),
+            factoryType: FactoryType.FURNACE_METAL,
+            group: CraftGroups.tools,
+            duration: 1
+        }, {
             id: 'barSteel',
             name: 'Steel bar',
             sources: [
@@ -67,6 +77,24 @@ export class CraftRecipes {
             factoryType: FactoryType.FURNACE_METAL,
             group: CraftGroups.metal,
             duration: 1
+        }, {
+            id: 'bucketMetalEmpty',
+            name: 'Empty metal bucket',
+            sources: [
+                new CollectibleResources(CollectibleTypes.BAR_STEEL, 1)
+            ],
+            product: new CollectibleResources(CollectibleTypes.BUCKET_METAL_EMPTY, 1),
+            factoryType: FactoryType.ANVIL,
+            group: CraftGroups.tools
+        }, {
+            id: 'bucketWoodEmpty',
+            name: 'Empty wooden bucket',
+            sources: [
+                new CollectibleResources(CollectibleTypes.WOOD_PLANK, 1)
+            ],
+            product: new CollectibleResources(CollectibleTypes.BUCKET_WOOD_EMPTY, 1),
+            factoryType: FactoryType.WORK_BENCH,
+            group: CraftGroups.tools
         }, {
             id: 'chest',
             name: 'Chest',

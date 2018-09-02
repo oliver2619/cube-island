@@ -2,7 +2,7 @@ import {Vector3} from "three";
 
 export class Constants {
 
-    private static DAYS_IN_MINUTES = 37;
+    private static DAYS_IN_MINUTES = 43.5;
 
     private static UP: Vector3 = new Vector3(0, 0, 1);
 
@@ -20,7 +20,7 @@ export class Constants {
 
     static get maxSpeed(): number {return 6;}
 
-    static get sleepThreshold(): number {return .333;}
+    static get sleepThreshold(): number {return .4;}
     
     static get up(): Vector3 {return Constants.UP;}
 

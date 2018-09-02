@@ -1,13 +1,13 @@
-import {Object3D, ColladaLoader, ColladaModel, Mesh, BufferGeometry, Geometry, Material, MeshLambertMaterial, MeshPhongMaterial, Texture} from "three";
+import {Object3D, ColladaLoader, ColladaModel, Mesh, BufferGeometry, Geometry, MeshLambertMaterial, MeshPhongMaterial, Texture, MeshMaterialType} from "three";
 
 export class CustomColladaLoader {
     private _scale = 1;
-    private _materialMapper: (material: Material) => Material;
+    private _materialMapper: (material: MeshMaterialType) => MeshMaterialType;
     private _textureMapper: (materialName: string, texture: Texture) => Texture;
     private _meshVisitor: (mesh: Mesh) => void;
     private _shadow = true;
 
-    set materialMapper(mapper: (materialName: Material) => Material) {this._materialMapper = mapper;}
+    set materialMapper(mapper: (materialName: MeshMaterialType) => MeshMaterialType) {this._materialMapper = mapper;}
 
     set meshVisitor(visitor: (mesh: Mesh) => void) {this._meshVisitor = visitor;}
 
@@ -65,11 +65,11 @@ export class CustomColladaLoader {
         }
     }
 
-    private copyMaterial(src: Material | Material[]): Material | Material[] {
+    private copyMaterial(src: MeshMaterialType | MeshMaterialType[]): MeshMaterialType | MeshMaterialType[] {
         if (src instanceof Array) {
-            const ret: Material[] = [];
+            const ret: MeshMaterialType[] = [];
             src.forEach((m) => {
-                ret.push(<Material> this.copyMaterial(m));
+                ret.push(<MeshMaterialType> this.copyMaterial(m));
             });
             return ret;
         } else {

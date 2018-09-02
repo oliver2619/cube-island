@@ -1,90 +1,93 @@
-import {Material, MeshLambertMaterial, VertexColors, DoubleSide, NormalBlending, MeshPhongMaterial, CustomBlending, OneFactor, SrcAlphaFactor, MeshPhysicalMaterial, OneMinusSrcAlphaFactor, FileLoader, ShaderMaterial, UniformsUtils, Vector3, BackSide, AdditiveBlending} from "three";
+import {MeshLambertMaterial, VertexColors, DoubleSide, NormalBlending, MeshPhongMaterial, CustomBlending, OneFactor, MeshPhysicalMaterial, OneMinusSrcAlphaFactor, FileLoader, ShaderMaterial, UniformsUtils, Vector3, AdditiveBlending, MeshMaterialType} from "three";
 import {Textures} from "./textures";
 import {ResourceLoadingProgress} from "./resourceLoadingProgress";
 
 export class Materials {
 
-    private _barkCube: Material;
-    private _barkCubeObject: Material;
-    private _bricks: Material;
-    private _clay: Material;
-    private _coal: Material;
-    private _compost: Material;
-    private _concrete: Material;
-    private _cursor: Material;
-    private _glas: Material;
-    private _gras: Material;
-    private _gravel: Material;
-    private _ironOre: Material;
-    private _lava: Material;
-    private _mud: Material;
-    private _rocks: Material;
-    private _rocksObject: Material;
-    private _sand: Material;
+    private _barkCube: MeshMaterialType;
+    private _barkCubeObject: MeshMaterialType;
+    private _bricks: MeshMaterialType;
+    private _clay: MeshMaterialType;
+    private _coal: MeshMaterialType;
+    private _compost: MeshMaterialType;
+    private _concrete: MeshMaterialType;
+    private _cursor: MeshMaterialType;
+    private _glas: MeshMaterialType;
+    private _gras: MeshMaterialType;
+    private _gravel: MeshMaterialType;
+    private _ironOre: MeshMaterialType;
+    private _lava: MeshMaterialType;
+    private _leaves: MeshMaterialType;
+    private _mud: MeshMaterialType;
+    private _rocks: MeshMaterialType;
+    private _rocksObject: MeshMaterialType;
+    private _sand: MeshMaterialType;
     private _sky: ShaderMaterial;
-    private _snow: Material;
-    private _steel: Material;
-    private _steelObject: Material;
-    private _stoneBricks: Material;
-    private _stoneBricksObject: Material;
-    private _water: Material;
-    private _woodPlank: Material;
-    private _woodPlankObject: Material;
-    private _woodTreeCutCube: Material;
+    private _snow: MeshMaterialType;
+    private _steel: MeshMaterialType;
+    private _steelObject: MeshMaterialType;
+    private _stoneBricks: MeshMaterialType;
+    private _stoneBricksObject: MeshMaterialType;
+    private _water: MeshMaterialType;
+    private _woodPlank: MeshMaterialType;
+    private _woodPlankObject: MeshMaterialType;
+    private _woodTreeCutCube: MeshMaterialType;
 
-    get barkCube(): Material {return this._barkCube;}
+    get barkCube(): MeshMaterialType {return this._barkCube;}
 
-    get barkCubeObject(): Material {return this._barkCubeObject;}
+    get barkCubeObject(): MeshMaterialType {return this._barkCubeObject;}
 
-    get bricks(): Material {return this._bricks;}
+    get bricks(): MeshMaterialType {return this._bricks;}
 
-    get clay(): Material {return this._clay;}
+    get clay(): MeshMaterialType {return this._clay;}
 
-    get coal(): Material {return this._coal;}
+    get coal(): MeshMaterialType {return this._coal;}
 
-    get compost(): Material {return this._compost;}
+    get compost(): MeshMaterialType {return this._compost;}
 
-    get concrete(): Material {return this._concrete;}
+    get concrete(): MeshMaterialType {return this._concrete;}
 
-    get cursor(): Material {return this._cursor;}
+    get cursor(): MeshMaterialType {return this._cursor;}
 
-    get glas(): Material {return this._glas;}
+    get glas(): MeshMaterialType {return this._glas;}
 
-    get gras(): Material {return this._gras;}
+    get gras(): MeshMaterialType {return this._gras;}
 
-    get gravel(): Material {return this._gravel;}
+    get gravel(): MeshMaterialType {return this._gravel;}
 
-    get ironOre(): Material {return this._ironOre;}
+    get ironOre(): MeshMaterialType {return this._ironOre;}
 
-    get lava(): Material {return this._lava;}
+    get lava(): MeshMaterialType {return this._lava;}
 
-    get mud(): Material {return this._mud;}
+    get leaves(): MeshMaterialType {return this._leaves;}
 
-    get rocks(): Material {return this._rocks;}
+    get mud(): MeshMaterialType {return this._mud;}
 
-    get rocksObject(): Material {return this._rocksObject;}
+    get rocks(): MeshMaterialType {return this._rocks;}
 
-    get sand(): Material {return this._sand;}
+    get rocksObject(): MeshMaterialType {return this._rocksObject;}
+
+    get sand(): MeshMaterialType {return this._sand;}
 
     get sky(): ShaderMaterial {return this._sky;}
 
-    get snow(): Material {return this._snow;}
+    get snow(): MeshMaterialType {return this._snow;}
 
-    get steel(): Material {return this._steel;}
+    get steel(): MeshMaterialType {return this._steel;}
 
-    get steelObject(): Material {return this._steelObject;}
+    get steelObject(): MeshMaterialType {return this._steelObject;}
 
-    get stoneBricks(): Material {return this._stoneBricks;}
+    get stoneBricks(): MeshMaterialType {return this._stoneBricks;}
 
-    get stoneBricksObject(): Material {return this._stoneBricksObject;}
+    get stoneBricksObject(): MeshMaterialType {return this._stoneBricksObject;}
 
-    get water(): Material {return this._water;}
+    get water(): MeshMaterialType {return this._water;}
 
-    get woodPlank(): Material {return this._woodPlank;}
+    get woodPlank(): MeshMaterialType {return this._woodPlank;}
 
-    get woodPlankObject(): Material {return this._woodPlankObject;}
+    get woodPlankObject(): MeshMaterialType {return this._woodPlankObject;}
 
-    get woodTreeCutCube(): Material {return this._woodTreeCutCube;}
+    get woodTreeCutCube(): MeshMaterialType {return this._woodTreeCutCube;}
 
     init(textures: Textures, progress: ResourceLoadingProgress): void {
         this._barkCube = new MeshLambertMaterial({map: textures.bark, vertexColors: VertexColors});
@@ -93,7 +96,7 @@ export class Materials {
         this._barkCubeObject.name = textures.bark.name;
         this._bricks = new MeshLambertMaterial({map: textures.bricks, vertexColors: VertexColors});
         this._bricks.name = textures.bricks.name;
-        this._clay = new MeshLambertMaterial({map: textures.clay, vertexColors: VertexColors});
+        this._clay = new MeshPhongMaterial({map: textures.clay, vertexColors: VertexColors, bumpMap: textures.clay, bumpScale: 0.005, shininess: 80});
         this._clay.name = textures.clay.name;
         this._coal = new MeshLambertMaterial({map: textures.coal, vertexColors: VertexColors});
         this._coal.name = textures.coal.name;
@@ -105,19 +108,21 @@ export class Materials {
         this._cursor.name = 'cursor';
         this._glas = new MeshPhongMaterial({transparent: true, depthWrite: false, side: DoubleSide, opacity: .1, color: 0x191919, specular: 0xffffff, shininess: 2500, blending: CustomBlending, blendSrc: OneFactor, blendDst: OneMinusSrcAlphaFactor, polygonOffset: true, polygonOffsetFactor: -1, envMap: textures.sky});
         this._glas.name = 'glas';
-        this._gras = new MeshLambertMaterial({map: textures.grass, vertexColors: VertexColors});
+        this._gras = new MeshLambertMaterial({map: textures.grass, vertexColors: VertexColors, });
         this._gras.name = textures.grass.name;
-        this._gravel = new MeshPhongMaterial({map: textures.gravel, bumpMap: textures.gravelBump, bumpScale: .004, specular: 0x202020, specularMap: textures.gravel, shininess: 40, vertexColors: VertexColors});
+        this._gravel = new MeshPhongMaterial({map: textures.gravel, bumpMap: textures.gravelBump, bumpScale: .004, specularMap: textures.gravel, shininess: 40, vertexColors: VertexColors});
         this._gravel.name = textures.gravel.name;
         this._ironOre = new MeshLambertMaterial({map: textures.ironOre, vertexColors: VertexColors});
         this._ironOre.name = textures.ironOre.name;
         this._lava = new MeshLambertMaterial({emissive: 0xffffff, color: 0x000000, emissiveMap: textures.lava});
         this._lava.name = textures.lava.name;
-        this._mud = new MeshLambertMaterial({map: textures.mud, vertexColors: VertexColors});
+        this._leaves = new MeshLambertMaterial({map: textures.leaves, transparent: true, side: DoubleSide, opacity: 1, blending: NormalBlending, depthWrite: false});
+        this.leaves.name = textures.leaves.name;
+        this._mud = new MeshPhongMaterial({map: textures.mud, vertexColors: VertexColors, bumpMap: textures.mud, bumpScale: .01, specularMap: textures.mud, shininess: 60});
         this._mud.name = textures.mud.name;
-        this._rocks = new MeshPhongMaterial({map: textures.rocks, vertexColors: VertexColors, specular: 0x202020, specularMap: textures.rocks, shininess: 40});
+        this._rocks = new MeshPhongMaterial({map: textures.rocks, vertexColors: VertexColors, specular: 0x202020, specularMap: textures.rocks, shininess: 10});
         this._rocks.name = textures.rocks.name;
-        this._rocksObject = new MeshPhongMaterial({map: textures.rocks, specular: 0x202020, specularMap: textures.rocks, shininess: 40});
+        this._rocksObject = new MeshPhongMaterial({map: textures.rocks, specular: 0x202020, specularMap: textures.rocks, shininess: 10});
         this._rocksObject.name = textures.rocks.name;
         this._sand = new MeshLambertMaterial({map: textures.sand, vertexColors: VertexColors});
         this._sand.name = textures.sand.name;
@@ -127,12 +132,14 @@ export class Materials {
         this._steel.name = textures.steel.name;
         this._steelObject = new MeshPhysicalMaterial({map: textures.steel, metalness: 1, roughness: .7, envMap: textures.sky});
         this._steelObject.name = textures.steel.name;
-        this._stoneBricks = new MeshLambertMaterial({map: textures.stoneBricks, vertexColors: VertexColors});
+        this._stoneBricks = new MeshPhongMaterial({map: textures.stoneBricks, bumpMap: textures.stoneBricksBump, bumpScale: .1, specular: 0x202020, specularMap: textures.stoneBricks, shininess: 10, vertexColors: VertexColors});
         this._stoneBricks.name = textures.stoneBricks.name;
-        this._stoneBricksObject = new MeshLambertMaterial({map: textures.stoneBricks});
+        this._stoneBricksObject = new MeshPhongMaterial({map: textures.stoneBricks, bumpMap: textures.stoneBricksBump, bumpScale: .1, specular: 0x202020, specularMap: textures.stoneBricks, shininess: 10});
         this._stoneBricksObject.name = textures.stoneBricks.name;
-        this._water = new MeshPhongMaterial({color: 0xffffff, specular: 0x404040, specularMap: textures.water, shininess: 512, map: textures.water, 
-            blending: NormalBlending, opacity: .8, transparent: true, depthWrite: false, envMap: textures.sky, reflectivity: 2});
+        this._water = new MeshPhongMaterial({
+            color: 0xffffff, specular: 0x404040, specularMap: textures.water, shininess: 512, map: textures.water,
+            blending: NormalBlending, opacity: .8, transparent: true, depthWrite: false, envMap: textures.sky, reflectivity: 2
+        });
         this._water.name = textures.water.name;
         this._woodTreeCutCube = new MeshLambertMaterial({map: textures.woodTreeCutCube, vertexColors: VertexColors});
         this._woodTreeCutCube.name = textures.woodTreeCutCube.name;
@@ -143,7 +150,7 @@ export class Materials {
 
         this.initSky(progress);
     }
-    
+
     private initSky(progress: ResourceLoadingProgress): void {
         this._sky = new ShaderMaterial({transparent: true, opacity: 1, blending: AdditiveBlending, depthTest: false, depthWrite: false});
         let fileLoader: FileLoader = new FileLoader();

@@ -27,6 +27,7 @@ export class StaticObject<T> implements Collectible, Simulation {
             this._box.min.z * Constants.cubeSize);
         this.object3D.rotateZ(rotation * Math.PI / 2);
         this.userData = _type.initUserData(this);
+        _type.postCreate(this);
     }
 
     get type(): CollectibleType {return this._type;}

@@ -13,7 +13,7 @@ export class SunStoreData {
 
 export class Sun {
     private static MAX_TIME = Math.PI * 2;
-    private static twilightThreshold = Math.cos((90. - 16.5) * Math.PI / 180);
+    private static twilightThreshold = Math.cos((90. + 6) * Math.PI / 180);
     private static SHADOW_DISTANCE_TO_WORLD = 50;
 
     private _sunPosition = new SkyObjectPosition();
@@ -95,7 +95,7 @@ export class Sun {
 
     newGame(settings: NewGameSettings): void {
         this._localDate = Sun.MAX_TIME * .25;
-        this._localTime = Sun.MAX_TIME * .3;
+        this._localTime = Sun.MAX_TIME * .275;
         this._sunPosition.latitude = settings.latitude;
 
         this.setLight();
@@ -109,8 +109,8 @@ export class Sun {
         return ret;
     }
 
-    setFogColor(fog: IFog): void {
-        fog.color.set(this.ambientLight.color);
+    setFogColor(color: Color): void {
+        color.set(this.fogColor);
     }
 
     setWorldDimensions(center: Vector3, radius: number) {
@@ -131,16 +131,16 @@ export class Sun {
         this.sunSprite.position.copy(this.directionalLight.position);
         //this.sunSprite.position.multiplyScalar(2);
 
-        const dawn = 1 - Math.max(0, Math.min(1, this.directionalLight.position.z / Sun.twilightThreshold));
-        const ambBrightness = Math.max(0, Math.min(1, (Sun.twilightThreshold + this.directionalLight.position.z) / (Sun.twilightThreshold * 2)));
-        const dirBrightness = Math.max(0, Math.min(1, this.directionalLight.position.z / Sun.twilightThreshold));
+        const dawn = 1 - Math.max(0, Math.min(1, -this.directionalLight.position.z / Sun.twilightThreshold));
+        const ambBrightness = Math.max(0, Math.min(1, (this.directionalLight.position.z - Sun.twilightThreshold) / (-Sun.twilightThreshold * 2)));
+        const dirBrightness = Math.max(0, Math.min(1, -this.directionalLight.position.z / Sun.twilightThreshold));
         this._skyColor = NaturalColors.sky;
         const ambLight = this._skyColor.clone();
         const dirLight = NaturalColors.getSun(dawn);
         const diffuceRefl = dirLight.clone();
         diffuceRefl.multiplyScalar(dirBrightness);
         Colors.normalize(ambLight);
-        ambLight.add(diffuceRefl);
+        ambLight.lerp(diffuceRefl, .8);
         Colors.normalize(ambLight);
         this.sunMaterial.color.copy(dirLight);
         dirLight.multiplyScalar(.9 * dirBrightness);

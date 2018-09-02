@@ -1,4 +1,4 @@
-import {BoxBufferGeometry, WebGLRenderer, Material, MeshLambertMaterial, Object3D, Mesh, Geometry, BufferGeometry, Vector3, Face3, Vector2, LOD} from "three";
+import {BoxBufferGeometry, WebGLRenderer, MeshLambertMaterial, Object3D, Mesh, Geometry, BufferGeometry, Vector3, Face3, Vector2, LOD, MeshMaterialType} from "three";
 import {Constants} from "./constants";
 import {CustomColladaLoader} from "./customColladaLoader";
 import {Textures, IconTextures} from "./textures";
@@ -6,8 +6,14 @@ import {ResourceLoadingProgress} from "./resourceLoadingProgress";
 import {Materials} from "./materials";
 
 export class Objects {
+    private _anvil: Object3D;
+
     private _barSteel: Object3D;
-    
+
+    private _bucketMetalEmpty: Object3D;
+
+    private _bucketWoodEmpty: Object3D;
+
     private _chest: Object3D;
 
     private _compost: Object3D;
@@ -30,7 +36,7 @@ export class Objects {
 
     private _furnace: Object3D;
 
-    private _mushroom: Object3D;
+    private _mushroom = new LOD();
 
     private _stairsStone: Object3D;
 
@@ -46,7 +52,13 @@ export class Objects {
 
     private _workbench: Object3D;
 
+    get anvil(): Object3D {return this._anvil.clone(false);}
+
     get barSteel(): Object3D {return this._barSteel.clone(false);}
+
+    get bucketMetalEmpty(): Object3D {return this._bucketMetalEmpty.clone(false);}
+
+    get bucketWoodEmpty(): Object3D {return this._bucketWoodEmpty.clone(false);}
 
     get chest(): Object3D {return this._chest.clone(true);}
 
@@ -84,7 +96,7 @@ export class Objects {
 
     get workbench(): Object3D {return this._workbench.clone(false);}
 
-    getCube(material: Material, materialTop?: Material, materialBottom?: Material): Object3D {
+    getCube(material: MeshMaterialType, materialTop?: MeshMaterialType, materialBottom?: MeshMaterialType): Object3D {
         const ret = this._cube.clone(true);
         const mt = materialTop !== undefined ? materialTop : material;
         const mb = materialBottom !== undefined ? materialBottom : material;
@@ -94,6 +106,7 @@ export class Objects {
 
     init(textures: Textures, materials: Materials, progress: ResourceLoadingProgress): void {
         let l: CustomColladaLoader;
+
         // flowers
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
@@ -124,8 +137,25 @@ export class Objects {
             this._flowerBlue.addLevel(this.replaceFlowerMaterial(obj, 0x3502EC), 10);
             this._flowerYellow.addLevel(this.replaceFlowerMaterial(obj, 0xEFD300), 10);
             this._flowerPink.addLevel(this.replaceFlowerMaterial(obj, 0xCE0A93), 10);
+            this._flowerWhite.addLevel(new Object3D(), 20);
+            this._flowerRed.addLevel(new Object3D(), 20);
+            this._flowerBlue.addLevel(new Object3D(), 20);
+            this._flowerYellow.addLevel(new Object3D(), 20);
+            this._flowerPink.addLevel(new Object3D(), 20);
             progress.resourceLoaded();
         });
+
+        // anvil
+        l = new CustomColladaLoader();
+        l.scale = Constants.cubeSize;
+        l.materialMapper = material => materials.steelObject;
+        l.shadow = false;
+        progress.addResource();
+        l.load('assets/objects/anvil.dae', (obj) => {
+            this._anvil = obj;
+            progress.resourceLoaded();
+        });
+
         // bar
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
@@ -135,6 +165,19 @@ export class Objects {
             this._barSteel = obj;
             progress.resourceLoaded();
         });
+
+        // bucketEmpty
+        l = new CustomColladaLoader();
+        l.scale = Constants.cubeSize;
+        l.materialMapper = material => materials.steelObject;
+        progress.addResource();
+        l.load('assets/objects/bucket.dae', (obj) => {
+            this._bucketMetalEmpty = obj;
+            this._bucketWoodEmpty = obj.clone(true);
+            this.processMaterial(this._bucketWoodEmpty, m => materials.woodPlankObject);
+            progress.resourceLoaded();
+        });
+
         // chest
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
@@ -144,15 +187,18 @@ export class Objects {
             this._chest = obj;
             progress.resourceLoaded();
         });
+
         // compost
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
+        l.shadow = false;
         l.materialMapper = material => materials.compost;
         progress.addResource();
         l.load('assets/objects/compost.dae', (obj) => {
             this._compost = obj;
             progress.resourceLoaded();
         });
+
         // fence
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
@@ -162,6 +208,7 @@ export class Objects {
             this._fence = obj;
             progress.resourceLoaded();
         });
+
         // furnace
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
@@ -171,15 +218,34 @@ export class Objects {
             this._furnace = obj;
             progress.resourceLoaded();
         });
+
         // mushroom
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
         l.shadow = false;
         progress.addResource();
         l.load('assets/objects/mushroom.dae', (obj) => {
-            this._mushroom = obj;
+            this._mushroom.addLevel(obj, 0);
             progress.resourceLoaded();
         });
+        l = new CustomColladaLoader();
+        l.scale = Constants.cubeSize;
+        l.shadow = false;
+        progress.addResource();
+        l.load('assets/objects/mushroom_lod_2.dae', (obj) => {
+            this._mushroom.addLevel(obj, 1);
+            progress.resourceLoaded();
+        });
+        l = new CustomColladaLoader();
+        l.scale = Constants.cubeSize;
+        l.shadow = false;
+        progress.addResource();
+        l.load('assets/objects/mushroom_lod_3.dae', (obj) => {
+            this._mushroom.addLevel(obj, 5);
+            this._mushroom.addLevel(new Object3D(), 20);
+            progress.resourceLoaded();
+        });
+
         // stairs stone
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
@@ -189,6 +255,7 @@ export class Objects {
             this._stairsStone = obj;
             progress.resourceLoaded();
         });
+
         // stairs wood
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
@@ -198,6 +265,7 @@ export class Objects {
             this._stairsWood = obj;
             progress.resourceLoaded();
         });
+
         // stonemill
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
@@ -207,16 +275,27 @@ export class Objects {
             this._stonemill = obj;
             progress.resourceLoaded();
         });
+
         // tree
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
-        l.materialMapper = (material) => materials.barkCubeObject;
+        l.materialMapper = (material) => {
+            switch (material.name) {
+                case 'wood':
+                    return materials.barkCubeObject;
+                case 'leaves':
+                    return materials.leaves;
+                default: return material;
+            }
+
+        };
         progress.addResource();
         l.load('assets/objects/tree.dae', (obj) => {
             this._tree = obj;
             progress.resourceLoaded();
 
         });
+
         // window
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
@@ -237,6 +316,7 @@ export class Objects {
             progress.resourceLoaded();
 
         });
+
         // wooden door
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
@@ -245,9 +325,9 @@ export class Objects {
         l.load('assets/objects/door.dae', (obj) => {
             this._doorWood = obj;
             progress.resourceLoaded();
-
         });
-        // wooden door
+
+        // wooden stick
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
         l.materialMapper = (material) => materials.woodPlankObject;
@@ -257,6 +337,7 @@ export class Objects {
             progress.resourceLoaded();
 
         });
+
         // workbench
         l = new CustomColladaLoader();
         l.scale = Constants.cubeSize;
@@ -267,6 +348,7 @@ export class Objects {
             progress.resourceLoaded();
 
         });
+
         // cube
         this.initCube();
     }
@@ -312,7 +394,7 @@ export class Objects {
         this._cube.receiveShadow = true;
     }
 
-    private processMaterial(rootObject: Object3D, visitor: (m: Material) => Material): void {
+    private processMaterial(rootObject: Object3D, visitor: (m: MeshMaterialType) => MeshMaterialType): void {
         rootObject.traverse((obj) => {
             if (obj.type === 'Mesh') {
                 const mesh = <Mesh> obj;

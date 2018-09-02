@@ -70,11 +70,64 @@ export abstract class ObjectType<T> extends CollectibleType {
 
     needsCubeToExist(): boolean {return false;}
 
+    postCreate(object: StaticObject<T>): void {}
+    
     save(userData: T): any {return undefined;}
 
     simulate(object: StaticObject<T>, timeout: number): void {}
 
     use(object: StaticObject<T>, control: ObjectControl): boolean {return false;}
+}
+
+// special object types
+
+export class ObjectTypeAnvil extends ObjectType<any> {
+
+    constructor(id: string) {super(id);}
+
+    get diggingTime(): number {return .4 * 2;}
+
+    canStack(): boolean {return false;}
+
+    create(assets: Assets): Object3D {return assets.objects.anvil;}
+
+    use(object: StaticObject<any>, control: ObjectControl): boolean {
+        control.craft(FactoryType.ANVIL);
+        return true;
+    }
+}
+
+export class ObjectTypeBarSteel extends ObjectType<any> {
+
+    constructor(id: string) {super(id);}
+
+    get diggingTime(): number {return .4 * 2;}
+
+    canStack(): boolean {return false;}
+
+    create(assets: Assets): Object3D {return assets.objects.barSteel;}
+}
+
+export class ObjectTypeBucketMetalEmpty extends ObjectType<any> {
+
+    constructor(id: string) {super(id);}
+
+    get diggingTime(): number {return .4 * 2;}
+
+    canStack(): boolean {return true;}
+
+    create(assets: Assets): Object3D {return assets.objects.bucketMetalEmpty;}
+}
+
+export class ObjectTypeBucketWoodEmpty extends ObjectType<any> {
+
+    constructor(id: string) {super(id);}
+
+    get diggingTime(): number {return .4 * 2;}
+
+    canStack(): boolean {return true;}
+
+    create(assets: Assets): Object3D {return assets.objects.bucketWoodEmpty;}
 }
 
 export interface ChestImpStoreData {
@@ -89,19 +142,12 @@ export interface ChestImp {
     close?: () => void;
 }
 
-export class ObjectTypeBarSteel extends ObjectType<any> {
-
-    constructor(id: string) {super(id);}
-
-    get diggingTime(): number {return .4 * 2;}
-
-    create(assets: Assets): Object3D {return assets.objects.barSteel;}
-}
-
 export class ObjectTypeChest extends ObjectType<ChestImp> {
     get diggingTime(): number {return 1;}
 
     constructor(id: string) {super(id);}
+
+    canStack(): boolean {return false;}
 
     create(assets: Assets): Object3D {return assets.objects.chest;}
 
@@ -178,6 +224,8 @@ export class ObjectTypeCompost extends ObjectType<any> {
     get diggingTime(): number {return .4 * 2;}
 
     get size(): Vector3 {return new Vector3(2, 2, 1);}
+
+    canStack(): boolean {return false;}
 
     coversFloor(): boolean {return true;}
 
@@ -314,6 +362,8 @@ export class ObjectTypeGrass extends ObjectType<any> {
     constructor(id: string) {super(id);}
 
     get diggingTime(): number {return .3;}
+
+    canStack(): boolean {return false;}
 
     coversFloor(): boolean {return true;}
 

@@ -1,5 +1,5 @@
 import {Sun, SunStoreData} from "./sun";
-import {Scene, CubeCamera, WebGLRenderer, Mesh, BoxBufferGeometry, Camera, ShaderLib, UniformsUtils, ShaderMaterial, SphereBufferGeometry, MeshLambertMaterial, DirectionalLight, Vector3} from "three";
+import {Scene, CubeCamera, WebGLRenderer, Mesh, BoxBufferGeometry, Camera, ShaderLib, UniformsUtils, ShaderMaterial, SphereBufferGeometry, MeshLambertMaterial, DirectionalLight, Vector3, MeshBasicMaterial, PlaneBufferGeometry} from "three";
 import {Assets} from "./assets";
 import {NewGameSettings} from "./world";
 import {SkyObjectPosition} from "./skyObjectPosition";
@@ -10,10 +10,13 @@ export class Sky {
     private static MOON_SCALE_FACTOR = 10;
 
     private skyScene = new Scene();
+    private cloudScene = new Scene();
     private skyboxOnlyScene = new Scene();
     private cubeCamera: CubeCamera;
     private _sun: Sun;
     private _skybox = new Mesh(new BoxBufferGeometry(-1, -1, -1))
+    private cloudsMaterial = new MeshBasicMaterial({depthTest: false, depthWrite: false, transparent: true});
+    private cloudsGeometry = new PlaneBufferGeometry(10, 10);
     private _moon = new Mesh(new SphereBufferGeometry(1737 / 384400 * Sky.MOON_SCALE_FACTOR * Sky.MOON_DISTANCE, 32, 32));
     private sunLightForMoon = new DirectionalLight(0x808080);
     private _moonPosition = new SkyObjectPosition();
@@ -27,6 +30,8 @@ export class Sky {
         uniforms['tFlip']['value'] = 1;
         this._skybox.material = new ShaderMaterial({fragmentShader: shader.fragmentShader, vertexShader: shader.vertexShader, uniforms: uniforms, depthWrite: false, depthTest: false});
         this._sun = new Sun(assets);
+
+        this.cloudsGeometry.rotateX(Math.PI);
 
         this.skyboxOnlyScene.add(this._skybox);
         this._skybox.castShadow = false;
@@ -42,14 +47,18 @@ export class Sky {
         this.skyScene.add(this._moon);
         this.skyScene.add(this.sunLightForMoon);
         this._sun.initSceneSprite(this.skyScene);
-        const mesh = new Mesh(new BoxBufferGeometry(-2, -2, -2), this._realSkyMaterial);
+        let mesh = new Mesh(new BoxBufferGeometry(-2, -2, -2), this._realSkyMaterial);
         this.skyScene.add(mesh);
+
+        this.cloudsMaterial.map = assets.textures.clouds;
+        mesh = new Mesh(this.cloudsGeometry, this.cloudsMaterial);
+        mesh.position.z = .03;
+        this.cloudScene.add(mesh);
     }
 
     animate(timeout: number): void {
-        //timeout *= 50;
         this._sun.animate(timeout);
-        this._sun.setFogColor(this.scene.fog);
+        this._sun.setFogColor(this.scene.fog.color);
         this._moonPosition.setTime(this._sun.localTime + this._sun.localDate, this._sun.localDate);
         this._moon.position.copy(this._moonPosition.position);
         this._moon.position.multiplyScalar(Sky.MOON_DISTANCE);
@@ -58,6 +67,7 @@ export class Sky {
         const pos = <Vector3> this._realSkyMaterial.uniforms['sunPosition'].value;
         pos.copy(this._sun.sunPosition);
         this.scene.fog.color.copy(this._sun.ambientColor);
+        this._sun.setFogColor(this.cloudsMaterial.color);
     }
 
     deinit(): void {
@@ -86,6 +96,9 @@ export class Sky {
         renderer.shadowMap.enabled = false;
 
         this.cubeCamera.update(renderer, this.skyScene);
+
+        renderer.autoClear = false;
+        this.cubeCamera.update(renderer, this.cloudScene);
     }
 
     renderSkybox(renderer: WebGLRenderer, camera: Camera): void {

@@ -1,4 +1,4 @@
-import {Scene, PerspectiveCamera, FogExp2, Geometry, Vector3, Vector2, Face3, Mesh, Object3D, WebGLRenderer, Camera, PCFShadowMap, LOD} from "three";
+import {Scene, PerspectiveCamera, FogExp2, Geometry, Vector3, Vector2, Face3, Mesh, Object3D, WebGLRenderer, Camera, PCFShadowMap, LOD, Group} from "three";
 import {SunStoreData} from "./sun";
 import {Person, PersonStoreData} from "./person";
 import {InputControlService} from "../app/services/input-control.service";
@@ -120,15 +120,7 @@ export class World {
             const cy = pos.y % CubeCluster.SIZE;
             const ret = cluster.addCube(type, cx, cy, pos.z);
             if (ret !== null && update === true) {
-                cluster.init(this.scene, this.assets);
-                if (cx === 0 && cluster.prevX !== null)
-                    cluster.prevX.init(this.scene, this.assets);
-                else if (cx === CubeCluster.SIZE - 1 && cluster.nextX !== null)
-                    cluster.nextX.init(this.scene, this.assets);
-                if (cy === 0 && cluster.prevY !== null)
-                    cluster.prevY.init(this.scene, this.assets);
-                else if (cy === CubeCluster.SIZE - 1 && cluster.nextY !== null)
-                    cluster.nextY.init(this.scene, this.assets);
+                this.getClusters(pos.x - 1, pos.y - 1, pos.x + 1, pos.y + 1).forEach(c => c.init(this.scene, this.assets));
             }
             this.updateCursor();
             return ret;
@@ -177,8 +169,8 @@ export class World {
         }
         this._person.lookThrough(camera);
         this.updateCursor();
-        // all 2.5 years per cube
-        const to = 2.5 * Constants.daysInSeconds * Constants.yearInDays / (this._size * this._size);
+        // all 3.5 years per cube
+        const to = 3.5 * Constants.daysInSeconds * Constants.yearInDays / (this._size * this._size);
         if (Math.random() < 2 * timeout / to) {
             this.renewRandomPlant();
         }
@@ -191,6 +183,9 @@ export class World {
         if (bb.containsPoint(newPos)) {
             return false;
         }
+        const below = this.getCollectible(newPos.x, newPos.y, newPos.z - 1);
+        if (below !== null && !below.type.canStack())
+            return false;
         let objType: ObjectType<any> = null;
         if (type instanceof ObjectType) {
             objType = <ObjectType<any>> type;
