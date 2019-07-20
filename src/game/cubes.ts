@@ -1,4 +1,4 @@
-import {Scene, Mesh, Geometry, Vector3, Face3, Vector2, Color, Group, MeshMaterialType} from "three";
+import {Scene, Mesh, Geometry, Vector3, Face3, Vector2, Color, Group, Material} from "three";
 import {Constants} from "./constants";
 import {Assets} from "./assets";
 import {CubeType} from "./cubeTypes";
@@ -202,7 +202,7 @@ export class CubeCluster {
 
     init(scene: Scene, assets: Assets): void {
         this.deinit(scene);
-        const materialsByName: {[key: string]: MeshMaterialType} = {};
+        const materialsByName: {[key: string]: Material} = {};
         this.cubes.forEach((c1, x) => {
             c1.forEach((c2, y) => {
                 c2.forEach((cube, z) => {
@@ -213,7 +213,7 @@ export class CubeCluster {
             });
         });
         let mesh: Mesh;
-        let material: MeshMaterialType;
+        let material: Material;
         for (let g in this.geometries) {
             this.geometries[g].computeBoundingSphere();
             this.geometries[g].computeBoundingBox();
@@ -361,7 +361,7 @@ export class CubeCluster {
         ]));
     }
 
-    private addFaces(cube: Cube, x: number, y: number, z: number, assets: Assets, materialsByName: {[key: string]: MeshMaterialType}): void {
+    private addFaces(cube: Cube, x: number, y: number, z: number, assets: Assets, materialsByName: {[key: string]: Material}): void {
         let geometry: Geometry;
         let nc: Cube;
         let no: StaticObject<any>;
@@ -400,7 +400,7 @@ export class CubeCluster {
         }
     }
 
-    private getOrCreateGeometry(material: MeshMaterialType, materialsByName: {[key: string]: MeshMaterialType}): Geometry {
+    private getOrCreateGeometry(material: Material, materialsByName: {[key: string]: Material}): Geometry {
         const name = material.name;
         let geometry: Geometry = this.geometries[name];
         if (geometry === undefined) {

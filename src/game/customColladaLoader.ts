@@ -1,13 +1,13 @@
-import {Object3D, ColladaLoader, ColladaModel, Mesh, BufferGeometry, Geometry, MeshLambertMaterial, MeshPhongMaterial, Texture, MeshMaterialType} from "three";
+import {Object3D, Mesh, BufferGeometry, Geometry, MeshLambertMaterial, MeshPhongMaterial, Texture, Material} from "three";
 
 export class CustomColladaLoader {
     private _scale = 1;
-    private _materialMapper: (material: MeshMaterialType) => MeshMaterialType;
+    private _materialMapper: (material: Material) => Material;
     private _textureMapper: (materialName: string, texture: Texture) => Texture;
     private _meshVisitor: (mesh: Mesh) => void;
     private _shadow = true;
 
-    set materialMapper(mapper: (materialName: MeshMaterialType) => MeshMaterialType) {this._materialMapper = mapper;}
+    set materialMapper(mapper: (materialName: Material) => Material) {this._materialMapper = mapper;}
 
     set meshVisitor(visitor: (mesh: Mesh) => void) {this._meshVisitor = visitor;}
 
@@ -18,8 +18,8 @@ export class CustomColladaLoader {
     set shadow(shadow: boolean) {this._shadow = shadow;}
 
     load(url: string, onLoad: (result: Object3D) => void): void {
-        const loader: ColladaLoader = <ColladaLoader> new (<any> window)['THREE']['ColladaLoader']();
-        loader.load(url, (model) => {
+        const loader: {} = new (<any> window)['THREE']['ColladaLoader']();
+        loader['load'](url, (model) => {
             const obj = this.fromModel(model);
             onLoad(obj);
         });
@@ -65,11 +65,11 @@ export class CustomColladaLoader {
         }
     }
 
-    private copyMaterial(src: MeshMaterialType | MeshMaterialType[]): MeshMaterialType | MeshMaterialType[] {
+    private copyMaterial(src: Material | Material[]): Material | Material[] {
         if (src instanceof Array) {
-            const ret: MeshMaterialType[] = [];
+            const ret: Material[] = [];
             src.forEach((m) => {
-                ret.push(<MeshMaterialType> this.copyMaterial(m));
+                ret.push(<Material> this.copyMaterial(m));
             });
             return ret;
         } else {
@@ -112,9 +112,9 @@ export class CustomColladaLoader {
         });
     }
 
-    private fromModel(model: ColladaModel): Object3D {
-        const found = model.scene.children.find((o) => {
-            return o.type === 'Group' || o.type === 'Mesh';
+    private fromModel(model: {}): Object3D {
+        const found = model['scene']['children']['find']((o) => {
+            return o['type'] === 'Group' || o['type'] === 'Mesh';
         });
         if (found === null)
             throw 'No object found';

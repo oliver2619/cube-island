@@ -1,93 +1,93 @@
-import {MeshLambertMaterial, VertexColors, DoubleSide, NormalBlending, MeshPhongMaterial, CustomBlending, OneFactor, MeshPhysicalMaterial, OneMinusSrcAlphaFactor, FileLoader, ShaderMaterial, UniformsUtils, Vector3, AdditiveBlending, MeshMaterialType} from "three";
+import {MeshLambertMaterial, VertexColors, DoubleSide, NormalBlending, MeshPhongMaterial, CustomBlending, OneFactor, MeshPhysicalMaterial, OneMinusSrcAlphaFactor, FileLoader, ShaderMaterial, UniformsUtils, Vector3, AdditiveBlending, Material} from "three";
 import {Textures} from "./textures";
 import {ResourceLoadingProgress} from "./resourceLoadingProgress";
 
 export class Materials {
 
-    private _barkCube: MeshMaterialType;
-    private _barkCubeObject: MeshMaterialType;
-    private _bricks: MeshMaterialType;
-    private _clay: MeshMaterialType;
-    private _coal: MeshMaterialType;
-    private _compost: MeshMaterialType;
-    private _concrete: MeshMaterialType;
-    private _cursor: MeshMaterialType;
-    private _glas: MeshMaterialType;
-    private _gras: MeshMaterialType;
-    private _gravel: MeshMaterialType;
-    private _ironOre: MeshMaterialType;
-    private _lava: MeshMaterialType;
-    private _leaves: MeshMaterialType;
-    private _mud: MeshMaterialType;
-    private _rocks: MeshMaterialType;
-    private _rocksObject: MeshMaterialType;
-    private _sand: MeshMaterialType;
+    private _barkCube: Material;
+    private _barkCubeObject: Material;
+    private _bricks: Material;
+    private _clay: Material;
+    private _coal: Material;
+    private _compost: Material;
+    private _concrete: Material;
+    private _cursor: Material;
+    private _glas: Material;
+    private _gras: Material;
+    private _gravel: Material;
+    private _ironOre: Material;
+    private _lava: Material;
+    private _leaves: Material;
+    private _mud: Material;
+    private _rocks: Material;
+    private _rocksObject: Material;
+    private _sand: Material;
     private _sky: ShaderMaterial;
-    private _snow: MeshMaterialType;
-    private _steel: MeshMaterialType;
-    private _steelObject: MeshMaterialType;
-    private _stoneBricks: MeshMaterialType;
-    private _stoneBricksObject: MeshMaterialType;
-    private _water: MeshMaterialType;
-    private _woodPlank: MeshMaterialType;
-    private _woodPlankObject: MeshMaterialType;
-    private _woodTreeCutCube: MeshMaterialType;
+    private _snow: Material;
+    private _steel: Material;
+    private _steelObject: Material;
+    private _stoneBricks: Material;
+    private _stoneBricksObject: Material;
+    private _water: Material;
+    private _woodPlank: Material;
+    private _woodPlankObject: Material;
+    private _woodTreeCutCube: Material;
 
-    get barkCube(): MeshMaterialType {return this._barkCube;}
+    get barkCube(): Material {return this._barkCube;}
 
-    get barkCubeObject(): MeshMaterialType {return this._barkCubeObject;}
+    get barkCubeObject(): Material {return this._barkCubeObject;}
 
-    get bricks(): MeshMaterialType {return this._bricks;}
+    get bricks(): Material {return this._bricks;}
 
-    get clay(): MeshMaterialType {return this._clay;}
+    get clay(): Material {return this._clay;}
 
-    get coal(): MeshMaterialType {return this._coal;}
+    get coal(): Material {return this._coal;}
 
-    get compost(): MeshMaterialType {return this._compost;}
+    get compost(): Material {return this._compost;}
 
-    get concrete(): MeshMaterialType {return this._concrete;}
+    get concrete(): Material {return this._concrete;}
 
-    get cursor(): MeshMaterialType {return this._cursor;}
+    get cursor(): Material {return this._cursor;}
 
-    get glas(): MeshMaterialType {return this._glas;}
+    get glas(): Material {return this._glas;}
 
-    get gras(): MeshMaterialType {return this._gras;}
+    get gras(): Material {return this._gras;}
 
-    get gravel(): MeshMaterialType {return this._gravel;}
+    get gravel(): Material {return this._gravel;}
 
-    get ironOre(): MeshMaterialType {return this._ironOre;}
+    get ironOre(): Material {return this._ironOre;}
 
-    get lava(): MeshMaterialType {return this._lava;}
+    get lava(): Material {return this._lava;}
 
-    get leaves(): MeshMaterialType {return this._leaves;}
+    get leaves(): Material {return this._leaves;}
 
-    get mud(): MeshMaterialType {return this._mud;}
+    get mud(): Material {return this._mud;}
 
-    get rocks(): MeshMaterialType {return this._rocks;}
+    get rocks(): Material {return this._rocks;}
 
-    get rocksObject(): MeshMaterialType {return this._rocksObject;}
+    get rocksObject(): Material {return this._rocksObject;}
 
-    get sand(): MeshMaterialType {return this._sand;}
+    get sand(): Material {return this._sand;}
 
     get sky(): ShaderMaterial {return this._sky;}
 
-    get snow(): MeshMaterialType {return this._snow;}
+    get snow(): Material {return this._snow;}
 
-    get steel(): MeshMaterialType {return this._steel;}
+    get steel(): Material {return this._steel;}
 
-    get steelObject(): MeshMaterialType {return this._steelObject;}
+    get steelObject(): Material {return this._steelObject;}
 
-    get stoneBricks(): MeshMaterialType {return this._stoneBricks;}
+    get stoneBricks(): Material {return this._stoneBricks;}
 
-    get stoneBricksObject(): MeshMaterialType {return this._stoneBricksObject;}
+    get stoneBricksObject(): Material {return this._stoneBricksObject;}
 
-    get water(): MeshMaterialType {return this._water;}
+    get water(): Material {return this._water;}
 
-    get woodPlank(): MeshMaterialType {return this._woodPlank;}
+    get woodPlank(): Material {return this._woodPlank;}
 
-    get woodPlankObject(): MeshMaterialType {return this._woodPlankObject;}
+    get woodPlankObject(): Material {return this._woodPlankObject;}
 
-    get woodTreeCutCube(): MeshMaterialType {return this._woodTreeCutCube;}
+    get woodTreeCutCube(): Material {return this._woodTreeCutCube;}
 
     init(textures: Textures, progress: ResourceLoadingProgress): void {
         this._barkCube = new MeshLambertMaterial({map: textures.bark, vertexColors: VertexColors});

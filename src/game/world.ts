@@ -78,7 +78,7 @@ export class World {
     private cursorObject: Object3D;
     private cursorType: CollectibleType;
     private staticObjects: StaticObject<any>[] = [];
-    private simulationSlots: SimulationSlots = new SimulationSlots(32);
+    private simulationSlots: SimulationSlots = new SimulationSlots(64);
     private _gameSettings = new GameSettings();
 
     constructor(private assets: Assets) {

@@ -1,4 +1,4 @@
-import {BoxBufferGeometry, WebGLRenderer, MeshLambertMaterial, Object3D, Mesh, Geometry, BufferGeometry, Vector3, Face3, Vector2, LOD, MeshMaterialType} from "three";
+import {BoxBufferGeometry, WebGLRenderer, MeshLambertMaterial, Object3D, Mesh, Geometry, BufferGeometry, Vector3, Face3, Vector2, LOD, Material} from "three";
 import {Constants} from "./constants";
 import {CustomColladaLoader} from "./customColladaLoader";
 import {Textures, IconTextures} from "./textures";
@@ -96,7 +96,7 @@ export class Objects {
 
     get workbench(): Object3D {return this._workbench.clone(false);}
 
-    getCube(material: MeshMaterialType, materialTop?: MeshMaterialType, materialBottom?: MeshMaterialType): Object3D {
+    getCube(material: Material, materialTop?: Material, materialBottom?: Material): Object3D {
         const ret = this._cube.clone(true);
         const mt = materialTop !== undefined ? materialTop : material;
         const mb = materialBottom !== undefined ? materialBottom : material;
@@ -394,7 +394,7 @@ export class Objects {
         this._cube.receiveShadow = true;
     }
 
-    private processMaterial(rootObject: Object3D, visitor: (m: MeshMaterialType) => MeshMaterialType): void {
+    private processMaterial(rootObject: Object3D, visitor: (m: Material) => Material): void {
         rootObject.traverse((obj) => {
             if (obj.type === 'Mesh') {
                 const mesh = <Mesh> obj;
