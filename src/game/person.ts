@@ -266,14 +266,17 @@ export class Person {
     moveByUser(world: World, timeout: number, inputControlService: InputControlService): void {
         const maxSpeed = (inputControlService.run ? Constants.maxSpeed : (Constants.maxSpeed * .33)) * this._health;
         const accel = new Vector3();
-        if (inputControlService.speedX !== 0 || inputControlService.speedY !== 0) {
+        const ax = inputControlService.speedX;
+        const ay = inputControlService.speedY;
+        const aa = ax * ax + ay * ay;
+        if (aa > .01) {
+            const sf = Constants.maxAcceleration / Math.sqrt(aa);
             const sn = Math.sin(this.euler.z);
             const cs = Math.cos(this.euler.z);
             const right = new Vector3(cs, sn, 0);
             const forward = new Vector3(-sn, cs, 0);
-            accel.addScaledVector(right, inputControlService.speedX);
-            accel.addScaledVector(forward, inputControlService.speedY);
-            accel.setLength(Constants.maxAcceleration);
+            accel.addScaledVector(right, inputControlService.speedX * sf);
+            accel.addScaledVector(forward, inputControlService.speedY* sf);
         } else {
             accel.copy(this.speed);
             accel.z = 0;

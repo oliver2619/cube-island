@@ -33,19 +33,7 @@ export class GameService {
         this.inputControlService.onCraft.push(() => navigationService.toggleCraftMenu(FactoryType.NONE));
         this.inputControlService.onEat.push(() => this._world.person.eat());
         this.inputControlService.onRotateObject.push(amount => this._world.person.rotateObject(amount));
-        const objectControl: ObjectControl = {
-            addAnimation: (animation: ObjectAnimation) => {
-                this._world.addAnimation(animation);
-            },
-            craft: (factoryType: FactoryType) => {
-                navigationService.toggleCraftMenu(factoryType);
-            },
-            openChest: (chest: ChestImp) => {
-                this._chest = chest;
-                navigationService.toggleInventoryMenu();
-            }
-        };
-        this.inputControlService.onUseObject.push(() => this._world.person.useObject(this._world, objectControl));
+        this.inputControlService.onUseObject.push(() => this.useObject());
         this.inputControlService.onToggleCursorMode.push(() => this._world.toggleCursorMode());
     }
 
@@ -56,7 +44,7 @@ export class GameService {
     set selectedChest(chest: ChestImp) {this._chest = chest;}
 
     get worldName(): string {return this._worldName;}
-    
+
     deleteSavedGame(name: string): void {window.localStorage.removeItem(GameService.PREFIX_SAVED_GAME + name);}
 
     exitGame(): void {
@@ -126,6 +114,24 @@ export class GameService {
 
     private animate(timeout: number): void {
         this._world.controlUser(timeout, this.inputControlService);
+        const rs = .5 * Math.PI * timeout;
+        this._world.turnPlayer(this.inputControlService.getJoyAxis(2) * rs, this.inputControlService.getJoyAxis(3) * rs);
+        if (this.inputControlService.isButtonToggled(14))
+            this.mouseWheel(-1);
+        if (this.inputControlService.isButtonToggled(15))
+            this.mouseWheel(1);
+        if (this.inputControlService.isButtonToggled(12))
+            this.navigationService.toggleCraftMenu(FactoryType.NONE);
+        if (this.inputControlService.isButtonToggled(2))
+            this.useObject();
+        if (this.inputControlService.isButtonToggled(4))
+            this._world.toggleCursorMode()
+        if (this.inputControlService.isButtonToggled(6))
+            this._world.person.rotateObject(1);
+        if (this.inputControlService.isButtonToggled(3))
+            this._world.person.eat();
+        if (this.inputControlService.isButtonToggled(13))
+            this._world.sleep();
         this._world.animate(timeout, this.renderService.camera);
     }
 
@@ -151,4 +157,21 @@ export class GameService {
             this.renderLoop();
         });
     }
+
+    private useObject(): void {
+        const objectControl: ObjectControl = {
+            addAnimation: (animation: ObjectAnimation) => {
+                this._world.addAnimation(animation);
+            },
+            craft: (factoryType: FactoryType) => {
+                this.navigationService.toggleCraftMenu(factoryType);
+            },
+            openChest: (chest: ChestImp) => {
+                this._chest = chest;
+                this.navigationService.toggleInventoryMenu();
+            }
+        };
+        this._world.person.useObject(this._world, objectControl)
+    }
+
 }

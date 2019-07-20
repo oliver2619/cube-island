@@ -10,24 +10,53 @@ export class InputControlService {
     private _right = false;
     private _jump = false;
     private _leftButton = false;
+    private _leftButtonBlock = false;
     private _rightButton = false;
     private _run = false;
     private _mouseMove: Array<(x: number, y: number) => void> = [];
     private _mouseWheel: Array<(x: number, y: number) => void> = [];
+    private _sleep: Array<() => void> = [];
     private _craft: Array<() => void> = [];
     private _eat: Array<() => void> = [];
     private _rotateObject: Array<(amount: number) => void> = [];
     private _selectSlot: Array<(index: number) => void> = [];
-    private _sleep: Array<() => void> = [];
     private _toggleCursorMode: Array<() => void> = [];
     private _use: Array<() => void> = [];
     private _canvas: HTMLElement;
+    private _gamepadIndex: number;
+    private _buttonLock: boolean[] = [];
 
-    constructor(private navigationService: NavigationService) {}
 
-    get jump(): boolean {return this._jump;}
+    constructor(private navigationService: NavigationService) {
+        window.addEventListener('gamepadconnected', (event: GamepadEvent) => {
+            console.log(`Gamepad connected: ${event.gamepad.id}`);
+            if (this._gamepadIndex === undefined) {
+                this._gamepadIndex = event.gamepad.index;
+            }
+        });
+        window.addEventListener('gamepaddisconnected', (event: GamepadEvent) => {
+            console.log(`Gamepad disconnected: ${event.gamepad.id}`);
+            if (this._gamepadIndex !== undefined && this._gamepadIndex === event.gamepad.index) {
+                this._gamepadIndex = undefined;
+            }
+        });
+    }
 
-    get leftButton(): boolean {const ret = this._leftButton; this._leftButton = false; return ret;}
+    get jump(): boolean {return this._jump || this.isButtonPressed(5);}
+
+    get leftButton(): boolean {
+        if (this._leftButton || this.isButtonPressed(0)) {
+            if (this._leftButtonBlock) {
+                return false;
+            } else {
+                this._leftButtonBlock = true;
+                return true;
+            }
+        } else {
+            this._leftButtonBlock = false;
+            return false;
+        }
+    }
 
     get onCraft(): Array<() => void> {return this._craft;}
 
@@ -46,15 +75,16 @@ export class InputControlService {
     get onToggleCursorMode(): Array<() => void> {return this._toggleCursorMode;}
 
     get onUseObject(): Array<() => void> {return this._use;}
-    
-    get rightButton(): boolean {return this._rightButton;}
 
-    get run(): boolean {return this._run;}
+    get rightButton(): boolean {return this._rightButton || this.isButtonPressed(1);}
+
+    get run(): boolean {return this._run || this.isButtonPressed(7);}
 
     get speedX(): number {
         let dx = this._right ? 1 : 0;
         if (this._left)
             --dx;
+        dx += this.getJoyAxis(0);
         return dx;
     }
 
@@ -62,7 +92,19 @@ export class InputControlService {
         let dy = this._up ? 1 : 0;
         if (this._down)
             --dy;
+        dy -= this.getJoyAxis(1);
         return dy;
+    }
+
+    getJoyAxis(axis: number): number {
+        if (this._gamepadIndex !== undefined) {
+            const ret = navigator.getGamepads()[this._gamepadIndex].axes[axis];
+            if (ret < -0.02 || ret > 0.02)
+                return ret;
+            else
+                return 0;
+        } else
+            return 0;
     }
 
     init(element: HTMLElement): void {
@@ -79,7 +121,7 @@ export class InputControlService {
         document.addEventListener('pointerlockerror', (e: Event) => {
             console.error('Request pointer lock failed');
         });
-        element.addEventListener('keydown', (e: KeyboardEvent) => {
+        document.addEventListener('keydown', (e: KeyboardEvent) => {
             switch (e.keyCode) {
                 case 13: // enter
                     this._use.forEach(cb => cb());
@@ -148,7 +190,7 @@ export class InputControlService {
             e.preventDefault();
             return false;
         });
-        element.addEventListener('keyup', (e: KeyboardEvent) => {
+        document.addEventListener('keyup', (e: KeyboardEvent) => {
             switch (e.keyCode) {
                 case 37: // left
                     this._left = false;
@@ -213,6 +255,23 @@ export class InputControlService {
         });
     }
 
+    isButtonToggled(button: number): boolean {
+        if (this._gamepadIndex === undefined) {
+            return false;
+        }
+        if (navigator.getGamepads()[this._gamepadIndex].buttons[button].pressed) {
+            if (this._buttonLock[button]) {
+                return false;
+            } else {
+                this._buttonLock[button] = true;
+                return true;
+            }
+        } else {
+            this._buttonLock[button] = false;
+            return false;
+        }
+    }
+
     startPointerLock(): void {
         if (document.pointerLockElement !== this._canvas) {
             if (document.pointerLockElement !== null)
@@ -220,5 +279,9 @@ export class InputControlService {
             this._canvas.focus();
             this._canvas.requestPointerLock();
         }
+    }
+
+    private isButtonPressed(button: number): boolean {
+        return this._gamepadIndex !== undefined ? navigator.getGamepads()[this._gamepadIndex].buttons[button].pressed : false;
     }
 }
