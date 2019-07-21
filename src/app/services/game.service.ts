@@ -113,28 +113,36 @@ export class GameService {
     }
 
     private animate(timeout: number): void {
-        this._world.controlUser(timeout, this.inputControlService);
-        const rs = .5 * Math.PI * timeout;
-        this._world.turnPlayer(this.inputControlService.getJoyAxis(2) * rs, this.inputControlService.getJoyAxis(3) * rs);
-        if (this.inputControlService.isButtonToggled(14))
-            this.mouseWheel(-1);
-        if (this.inputControlService.isButtonToggled(15))
-            this.mouseWheel(1);
-        if (this.inputControlService.isButtonToggled(12))
-            this.navigationService.toggleCraftMenu(FactoryType.NONE);
-        if (this.inputControlService.isButtonToggled(2))
-            this.useObject();
-        if (this.inputControlService.isButtonToggled(4))
-            this._world.toggleCursorMode()
-        if (this.inputControlService.isButtonToggled(6))
-            this._world.person.rotateObject(1);
-        if (this.inputControlService.isButtonToggled(3))
-            this._world.person.eat();
-        if (this.inputControlService.isButtonToggled(13))
-            this._world.sleep();
+        if (this.navigationService.isGameVisible()) {
+            this._world.controlUser(timeout, this.inputControlService);
+            this.joypad(timeout);
+        }
         this._world.animate(timeout, this.renderService.camera);
     }
 
+    private joypad(timeout: number): void {
+            const rs = .5 * Math.PI * timeout;
+            this._world.turnPlayer(this.inputControlService.getJoyAxis(2) * rs, this.inputControlService.getJoyAxis(3) * rs);
+            if (this.inputControlService.isButtonToggled(14))
+                this.mouseWheel(-1);
+            if (this.inputControlService.isButtonToggled(15))
+                this.mouseWheel(1);
+            if (this.inputControlService.isButtonToggled(12))
+                this.navigationService.toggleCraftMenu(FactoryType.NONE);
+            if (this.inputControlService.isButtonToggled(2))
+                this.useObject();
+            if (this.inputControlService.isButtonToggled(4))
+                this._world.toggleCursorMode()
+            if (this.inputControlService.isButtonToggled(6))
+                this._world.person.rotateObject(1);
+            if (this.inputControlService.isButtonToggled(3))
+                this._world.person.eat();
+            if (this.inputControlService.isButtonToggled(13))
+                this._world.sleep();
+            if (this.inputControlService.isButtonToggled(8))
+                this.navigationService.showGameMenu();
+    }
+    
     private mouseWheel(amount: number): void {
         let s = this._world.selectedInventorySlot + amount;
         s = Math.max(0, Math.min(s, 7));

@@ -99,7 +99,7 @@ export class InputControlService {
     getJoyAxis(axis: number): number {
         if (this._gamepadIndex !== undefined) {
             const ret = navigator.getGamepads()[this._gamepadIndex].axes[axis];
-            if (ret < -0.02 || ret > 0.02)
+            if (ret < -0.05 || ret > 0.05)
                 return ret;
             else
                 return 0;

@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, AfterViewInit} from '@angular/core';
 import {GameService} from '../../services/game.service';
 import {MessageBoxComponent, MessageBox, MessageBoxResult} from '../message-box/message-box.component';
 import {NavigationService} from '../../services/navigation.service';
@@ -8,7 +8,7 @@ import {NavigationService} from '../../services/navigation.service';
     templateUrl: './game-menu.component.html',
     styleUrls: ['./game-menu.component.css']
 })
-export class GameMenuComponent implements OnInit {
+export class GameMenuComponent implements OnInit, AfterViewInit {
 
     @ViewChild(MessageBoxComponent)
     messageBox: MessageBox;
@@ -19,6 +19,11 @@ export class GameMenuComponent implements OnInit {
 
     ngOnInit() {
         this.gameService.stop();
+    }
+
+    ngAfterViewInit(): void {
+        if (document.pointerLockElement !== null)
+            document.exitPointerLock();
     }
 
     onExit(): void {

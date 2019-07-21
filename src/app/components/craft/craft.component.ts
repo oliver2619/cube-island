@@ -1,4 +1,4 @@
-import {Component, OnInit, AfterViewInit, ViewChild} from '@angular/core';
+import {Component, OnInit, AfterViewInit, ViewChild, OnDestroy} from '@angular/core';
 import {NavigationService} from '../../services/navigation.service';
 import {CraftRecipes, CraftRecipe, CraftGroup} from '../../../game/crafting';
 import {GameService} from '../../services/game.service';
@@ -7,7 +7,7 @@ import {CanvasComponent} from '../canvas/canvas.component';
 import {OrthographicCamera, Scene, DirectionalLight, AmbientLight, Group, PlaneBufferGeometry, MeshBasicMaterial, NormalBlending, Mesh, Object3D} from 'three';
 import {InventoryItem} from '../../../game/hud';
 import {AssetsService} from '../../services/assets.service';
-import {FactoryType} from '../../../game/factoryType';
+import {InputControlService} from '../../services/input-control.service';
 
 interface CraftTabGroup {
     id: string;
@@ -19,7 +19,7 @@ interface CraftTabGroup {
     templateUrl: './craft.component.html',
     styleUrls: ['./craft.component.css']
 })
-export class CraftComponent implements OnInit, AfterViewInit {
+export class CraftComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private static backgroundGeometry: PlaneBufferGeometry = undefined;
     private static backgroundSelectedMaterial = new MeshBasicMaterial({color: 0xffffff});
@@ -39,8 +39,9 @@ export class CraftComponent implements OnInit, AfterViewInit {
     private _scene: Scene = new Scene();
     private _recipeObjects: Group[] = [];
     private page = 0;
+    private _buttonTimer: number;
 
-    constructor(private navigationService: NavigationService, private gameService: GameService, private assetsService: AssetsService) {
+    constructor(private navigationService: NavigationService, private gameService: GameService, private assetsService: AssetsService, private inputControlService: InputControlService) {
         if (CraftComponent.backgroundGeometry === undefined) {
             CraftComponent.backgroundGeometry = new PlaneBufferGeometry(InventoryItem.size * 8, InventoryItem.size);
             CraftComponent.backgroundGeometry.translate(InventoryItem.size * 4, InventoryItem.size * .5, 0);
@@ -55,6 +56,10 @@ export class CraftComponent implements OnInit, AfterViewInit {
     get numberOfPages(): number {return Math.ceil(this._recipeByGroup[this.selectedTab].length / CraftComponent.ITEMS_PER_PAGE);}
 
     get selectedTab(): string {return this._selectedTab;}
+
+    private get selectedTabIndex(): number {
+        return this._groups.findIndex(g => g.id === this._selectedTab);
+    }
 
     canCraft(): boolean {return this._canCraftSelected;}
 
@@ -87,10 +92,15 @@ export class CraftComponent implements OnInit, AfterViewInit {
         this.render();
     }
 
+    ngOnDestroy(): void {
+        window.clearInterval(this._buttonTimer);
+    }
+
     ngOnInit() {
         this._person = this.gameService.player;
         this.initScene();
         this.onSelectTab(this._groups[0].id);
+        this._buttonTimer = window.setInterval(() => this.joypadLoop(), 10);
     }
 
     ngAfterViewInit(): void {
@@ -204,13 +214,50 @@ export class CraftComponent implements OnInit, AfterViewInit {
         this._scene.add(this._selectObject);
     }
 
+    private joypadLoop(): void {
+        if (this.inputControlService.isButtonToggled(12) && this._selectedRecipe > 0) {
+            this.select(this._selectedRecipe - 1);
+            this.render();
+        }
+        if (this.inputControlService.isButtonToggled(13)) {
+            this.select(this._selectedRecipe + 1);
+            this.render();
+        }
+        if (this.canCraft()) {
+            if (this.inputControlService.isButtonToggled(0)) {
+                this.craft(1);
+            }
+            if (this.inputControlService.isButtonToggled(1)) {
+                this.craft(5);
+            }
+            if (this.inputControlService.isButtonToggled(2)) {
+                this.craftAll();
+            }
+        }
+        if (this.inputControlService.isButtonToggled(4) && this.canNavPrevPage()) {
+            this.navPrevPage();
+        }
+        if (this.inputControlService.isButtonToggled(5) && this.canNavNextPage()) {
+            this.navNextPage();
+        }
+        if (this.inputControlService.isButtonToggled(8)) {
+            this.onClose();
+        }
+        if (this.inputControlService.isButtonToggled(14)){
+            this.selectPrevTab();
+        }
+        if (this.inputControlService.isButtonToggled(15)){
+            this.selectNextTab();
+        }
+    }
+
     private onSelectTab(id: string): void {
         this._selectedTab = id;
         this.page = 0;
         this.select(0);
         this.updateRecipies();
     }
-
+    
     private render(): void {
         this.canvas.renderer.render(this._scene, this._camera);
     }
@@ -222,7 +269,21 @@ export class CraftComponent implements OnInit, AfterViewInit {
         this._canCraftSelected = this.calculateCanCraft(this._selectedRecipe);
         this._selectObject.position.y = (5 - row) * InventoryItem.size;
     }
-
+    
+    private selectNextTab(): void {
+        const i = this.selectedTabIndex;
+        if (i + 1 < this._groups.length) {
+            this.selectTab(this._groups[i + 1].id);
+        }
+    }
+    
+    private selectPrevTab(): void {
+        const i = this.selectedTabIndex;
+        if(i > 0) {
+            this.selectTab(this._groups[i - 1].id);
+        }
+    }
+    
     private updateRecipies(): void {
         this._recipeObjects.forEach(g => this._scene.remove(g));
         this._recipeObjects = [];

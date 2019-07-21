@@ -1,4 +1,4 @@
-import {Component, OnInit, AfterViewInit, ViewChild} from '@angular/core';
+import {Component, OnInit, AfterViewInit, ViewChild, OnDestroy} from '@angular/core';
 import {NavigationService} from '../../services/navigation.service';
 import {CanvasComponent} from '../canvas/canvas.component';
 import {OrthographicCamera, Scene, Vector2, DirectionalLight, AmbientLight} from 'three';
@@ -7,13 +7,14 @@ import {AssetsService} from '../../services/assets.service';
 import {GameService} from '../../services/game.service';
 import {Constants} from '../../../game/constants';
 import {ResourceSet} from '../../../game/resourceSet';
+import {InputControlService} from '../../services/input-control.service';
 
 @Component({
     selector: 'app-inventory',
     templateUrl: './inventory.component.html',
     styleUrls: ['./inventory.component.css']
 })
-export class InventoryComponent implements OnInit, AfterViewInit {
+export class InventoryComponent implements OnInit, OnDestroy, AfterViewInit {
 
     @ViewChild(CanvasComponent)
     private canvas: CanvasComponent;
@@ -24,8 +25,13 @@ export class InventoryComponent implements OnInit, AfterViewInit {
     private chestItems: InventoryItem[] = [];
     private selectedInventorySlot = -1;
     private selectedChestSlot = -1;
+    private _joypadTimer: number;
 
-    constructor(private navigationService: NavigationService, private assetsService: AssetsService, private gameService: GameService) {
+    constructor(private navigationService: NavigationService, private assetsService: AssetsService, private gameService: GameService, private inputControlService: InputControlService) {
+    }
+
+    ngOnDestroy(): void {
+        window.clearInterval(this._joypadTimer);
     }
 
     ngOnInit() {
@@ -50,8 +56,9 @@ export class InventoryComponent implements OnInit, AfterViewInit {
                     it.set(chest.content.getType(i), amount);
             }
         }
+        this._joypadTimer = window.setInterval(() => this.joypadLoop(), 10);
     }
-
+    
     ngAfterViewInit(): void {
         if (document.pointerLockElement !== null)
             document.exitPointerLock();
@@ -102,6 +109,11 @@ export class InventoryComponent implements OnInit, AfterViewInit {
         this._camera.right = w;
         this._camera.top = h;
         this._camera.updateProjectionMatrix();
+    }
+
+    private joypadLoop(): void {
+        if (this.inputControlService.isButtonToggled(8))
+            this.onClose();
     }
 
     private render(): void {
